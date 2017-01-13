@@ -1,0 +1,37 @@
+{
+  "name": "repo-security-scanner",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "lint": "eslint .",
+    "test": "npm run lint && mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/UKHomeOffice/repo-security-scanner.git"
+  },
+  "author": "Chris Nesbitt-Smith <chris@cns.me.uk>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/UKHomeOffice/repo-security-scanner/issues"
+  },
+  "homepage": "https://github.com/UKHomeOffice/repo-security-scanner#readme",
+  "dependencies": {
+    "bluebird": "^3.4.7",
+    "body-parser": "^1.15.2",
+    "express": "^4.14.0",
+    "github": "^8.0.0",
+    "jsonwebtoken": "^7.2.1",
+    "mocha": "^3.2.0",
+    "supertest": "^2.0.1"
+  },
+  "devDependencies": {
+    "eslint": "^3.13.1",
+    "eslint-config-standard": "^6.2.1",
+    "eslint-plugin-mocha": "^4.8.0",
+    "eslint-plugin-promise": "^3.4.0",
+    "eslint-plugin-standard": "^2.0.1"
+  }
+}
