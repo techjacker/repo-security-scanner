@@ -5,11 +5,12 @@ const jwt = require('jsonwebtoken')
 const cert = process.env.GITHUB_PRIVATEKEY
 const GitHubApi = require('github')
 const PORT = process.env.PORT || 8080 // eslint-disable-line no-magic-numbers, no-process-env
-
 app.use(bodyParser.json())
 
-app.post('/github', (req, res) => {
+
+app.post('/', (req, res) => {
   if (req.headers['x-github-event'] !== 'push') {
+
     return res.send('not for us')
   }
 
@@ -20,6 +21,8 @@ app.post('/github', (req, res) => {
     timeout: 5000
   })
 
+
+  console.log('Authenticating')
   github.authenticate({
     type: 'integration',
     token: token
