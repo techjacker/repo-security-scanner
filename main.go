@@ -29,26 +29,24 @@ func main() {
 
 // curl -X POST http://localhost:8080/github
 func GithubHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+
+	// get rules
 	_, cmd, _, _ := runtime.Caller(0)
 	rules, err := df.ReadRulesFromFile(path.Join(path.Dir(cmd), rulesPath))
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Cannot read rule file: %s\n", err), 500)
-
 		return
 	}
 
-	req, err := http.NewRequest("GET", diffURL, nil)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("Could not get diff: %s\n", err), 500)
-	}
-	req.Header.Set("Accept", "application/vnd.github.VERSION.diff")
-
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("Could not get diff content from github API: %s\n", err), 500)
-	}
+	// get full diff from github API
+	resp, err := getGithubDiff(diffURL)
 	defer resp.Body.Close()
+	if err != nil {
+		http.Error(w, fmt.Sprintf("%s", err), 500)
+		return
+	}
+
+	// check body of diff
 	res, err := df.CheckDiffs(resp.Body, rules)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Error reading diff: %s\n", err), 500)
