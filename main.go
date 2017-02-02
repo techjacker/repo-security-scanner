@@ -12,7 +12,8 @@ import (
 )
 
 const rulesPath = "rules/gitrob.json"
-const diffURL = "https://api.github.com/repos/ukhomeoffice-bot-test/testgithubintegration/commits/f591c33a1b9500d0721b6664cfb6033d47a00793"
+
+// const diffURL = "https://api.github.com/repos/ukhomeoffice-bot-test/testgithubintegration/commits/f591c33a1b9500d0721b6664cfb6033d47a00793"
 const serverPort = 8080
 
 func Index(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
@@ -38,7 +39,20 @@ func GithubHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) 
 		return
 	}
 
+	// decode github push event payload
+	gitRes, err := decodeGithubJSON(r.Body)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("%s", err), 500)
+		return
+	}
+
 	// get full diff from github API
+	diffURL := fmt.Sprintf(
+		"%s/%s",
+		gitRes.getDiffURLStem(),
+		// TODO: loop through all the commits
+		gitRes.Body.Commits[0].ID,
+	)
 	resp, err := getGithubDiff(diffURL)
 	defer resp.Body.Close()
 	if err != nil {

@@ -1,7 +1,9 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 )
 
@@ -10,22 +12,17 @@ import (
 type GithubResponse struct {
 	Body struct {
 		Commits []struct {
-			Added    []string      `json:"added"`
-			ID       string        `json:"id"`
-			Modified []interface{} `json:"modified"`
-			// Removed  []interface{} `json:"removed"`
-			// "https://github.com/ukhomeoffice-bot-test/testgithubintegration/commit/47797c0123bc0f5adfcae3d3467a2ed12e72b2cb",
-			// curl -s "https://api.github.com/repos/ukhomeoffice-bot-test/testgithubintegration/commits/47797c0123bc0f5adfcae3d3467a2ed12e72b2cb" -H "Accept: application/vnd.github.VERSION.diff"
-			// URL string `json:"url"`
+			Added []string `json:"added"`
+			ID    string   `json:"id"`
 		} `json:"commits"`
+		Repository struct {
+			Name  string `json:"name"`
+			Owner struct {
+				Email interface{} `json:"email"`
+				Name  string      `json:"name"`
+			} `json:"owner"`
+		} `json:"repository"`
 	} `json:"body"`
-	Repository struct {
-		Name  string `json:"name"`
-		Owner struct {
-			Email interface{} `json:"email"`
-			Name  string      `json:"name"`
-		} `json:"owner"`
-	} `json:"repository"`
 	// Installation struct {
 	// 	ID int64 `json:"id"`
 	// } `json:"installation"`
@@ -34,11 +31,21 @@ type GithubResponse struct {
 	} `json:"headers"`
 }
 
-//   .then(() => req.body.commits)
-//       sha: commit.id,
-// const installationId = req.body.installation.id
-// const repo = req.body.repository.name
-// const owner = req.body.repository.owner.name
+// getDiffURLStem/${CommitID}
+func (g *GithubResponse) getDiffURLStem() string {
+	return fmt.Sprintf(
+		"https://api.github.com/repos/%s/%s/commits",
+		g.Body.Repository.Owner.Name,
+		g.Body.Repository.Name,
+	)
+}
+
+func decodeGithubJSON(body io.Reader) (*GithubResponse, error) {
+	var gitJson GithubResponse
+	dec := json.NewDecoder(body)
+	err := dec.Decode(&gitJson)
+	return &gitJson, err
+}
 
 func getGithubDiff(url string) (*http.Response, error) {
 	req, err := http.NewRequest("GET", url, nil)
