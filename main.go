@@ -11,14 +11,10 @@ import (
 	df "github.com/techjacker/diffence"
 )
 
-const rulesPath = "rules/gitrob.json"
-
-// const diffURL = "https://api.github.com/repos/ukhomeoffice-bot-test/testgithubintegration/commits/f591c33a1b9500d0721b6664cfb6033d47a00793"
-const serverPort = 8080
-
-func Index(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	fmt.Fprint(w, "Welcome!\n")
-}
+const (
+	rulesPath  = "rules/gitrob.json"
+	serverPort = 8080
+)
 
 func main() {
 	router := httprouter.New()
@@ -28,9 +24,7 @@ func main() {
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", serverPort), router))
 }
 
-// curl -X POST http://localhost:8080/github
 func GithubHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-
 	// get rules
 	_, cmd, _, _ := runtime.Caller(0)
 	rules, err := df.ReadRulesFromFile(path.Join(path.Dir(cmd), rulesPath))
