@@ -39,44 +39,22 @@ func GithubHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) 
 		return
 	}
 
-	// get full diff from github API
-	diffURL := fmt.Sprintf(
-		"%s/%s",
-		gitRes.getDiffURLStem(),
-		// TODO: loop through all the commits
-		gitRes.Body.Commits[0].ID,
+	// analyse rules
+	ruleResultsUnanalysed, err := runRules(
+		rules,
+		gitRes.getDiffURL(gitRes.Body.Commits[0].ID),
 	)
-	resp, err := getGithubDiff(diffURL)
-	defer resp.Body.Close()
 	if err != nil {
 		http.Error(w, fmt.Sprintf("%s", err), 500)
 		return
 	}
 
-	// check body of diff
-	res, err := df.CheckDiffs(resp.Body, rules)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("Error reading diff: %s\n", err), 500)
-		return
-	}
-
-	// print errors
-	// -> save to string when plugin in email
-	dirty := false
-	for k, v := range res {
-		if len(v) > 0 {
-			dirty = true
-			fmt.Fprintf(w, "File %s violates %d rules:\n", k, len(v))
-			for _, r := range v {
-				fmt.Fprintf(w, "\n%s\n", r.String())
-			}
-		}
-	}
-
-	// Notify recipients if fails checks
-	if dirty == false {
+	// TODO: Notify recipients if fails checks
+	ruleResults := checkRuleResults(ruleResultsUnanalysed, gitRes.Body.Commits[0].ID)
+	if ruleResults.Pass == true {
 		fmt.Fprintf(w, "Diff contains no offenses\n\n")
 	} else {
 		fmt.Fprintf(w, "TODO: email list of recipients to be notified of violations\n\n")
 	}
+
 }

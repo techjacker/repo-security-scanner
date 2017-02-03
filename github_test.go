@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"io"
 	"testing"
 )
@@ -53,6 +54,7 @@ func Test_decodeGithubJSON(t *testing.T) {
 			equals(t, got.Body.Repository.Owner.Email, tt.want.RepositoryOwnerEmail)
 			equals(t, got.Headers.X_github_event, tt.want.Headers_X_github_event)
 			equals(t, got.getDiffURLStem(), tt.want.GithubAPIDiffURL)
+			equals(t, got.getDiffURL(tt.want.CommitsID), fmt.Sprintf("%s/%s", tt.want.GithubAPIDiffURL, tt.want.CommitsID))
 		})
 	}
 }

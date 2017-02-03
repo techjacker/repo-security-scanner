@@ -1,4 +1,4 @@
+- [ ] Loop through commits - check each one
 - [ ] Add middleware
-- [ ] loop through commits - check each one
-- [ ] parallelize requests to github API
-- [ ] add context + timeout to requests to github API
+- [ ] Parallelize requests to github API
+- [ ] Add context + timeout to requests to github API

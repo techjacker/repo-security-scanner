@@ -29,6 +29,20 @@ type GithubResponse struct {
 	} `json:"headers"`
 }
 
+// GithubAPIEvent reveals information from a Github API event payload
+type GithubAPIEvent interface {
+	getDiffURL(string) string
+}
+
+// getDiffURL returns the URL of the Github Diff API endpoint for a particular commit
+func (g *GithubResponse) getDiffURL(commitID string) string {
+	return fmt.Sprintf(
+		"%s/%s",
+		g.getDiffURLStem(),
+		commitID,
+	)
+}
+
 // getDiffURLStem/${CommitID}
 func (g *GithubResponse) getDiffURLStem() string {
 	return fmt.Sprintf(
