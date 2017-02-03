@@ -17,7 +17,6 @@ lint:
 	@go vet ./...
 	@interfacer $(go list ./... | grep -v /vendor/)
 
-
 rules:
 	@curl -s $(RULES_URL) > $(RULES_DIR)/gitrob.json
 
@@ -27,14 +26,22 @@ diff:
 		https://api.github.com/repos/$(USER)/$(REPO)/commits/$(COMMIT_ID) \
 		-H "Accept: application/vnd.github.VERSION.diff"
 
+struct:
+	@gojson \
+		-name githubResponseFull \
+		-input test/fixtures/github_diff_response.json
+
+watch:
+	@realize run
+
+run:
+	@go build -race . && ./repo-security-scanner
+
 test-run:
 	@curl \
 		-X POST \
 		-d @$(DIFF_FILE) \
 		http://localhost:$(PORT)/github
-
-run:
-	@go build -race . && ./repo-security-scanner
 
 test:
 	@go test ./...
@@ -46,4 +53,4 @@ test-race:
 	@go test -race ./...
 
 
-.PHONY: test run
+.PHONY: test* run
