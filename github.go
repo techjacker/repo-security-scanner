@@ -7,6 +7,7 @@ import (
 	"net/http"
 )
 
+// GithubResponse is for marshalling Github push event JSON payloads
 type GithubResponse struct {
 	Body struct {
 		Commits []struct {
@@ -53,10 +54,10 @@ func (g *GithubResponse) getDiffURLStem() string {
 }
 
 func decodeGithubJSON(body io.Reader) (*GithubResponse, error) {
-	var gitJson GithubResponse
+	var gitJSON GithubResponse
 	dec := json.NewDecoder(body)
-	err := dec.Decode(&gitJson)
-	return &gitJson, err
+	err := dec.Decode(&gitJSON)
+	return &gitJSON, err
 }
 
 func getGithubDiff(url string) (*http.Response, error) {

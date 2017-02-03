@@ -6,6 +6,7 @@ import (
 	df "github.com/techjacker/diffence"
 )
 
+// RuleResults is the struct for revealing the result of diff rule analysis
 type RuleResults struct {
 	Pass bool
 	Info string

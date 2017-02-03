@@ -1,4 +1,5 @@
-- [ ] Loop through commits - check each one
+- [ ] type []RuleResults == logger = strings.Stringer() interface -> for creating string for email
+- [ ] Add email lib + tests
 - [ ] Add middleware
 - [ ] Parallelize requests to github API
 - [ ] Add context + timeout to requests to github API

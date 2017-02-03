@@ -39,20 +39,31 @@ func GithubHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) 
 		return
 	}
 
-	// analyse rules
-	ruleResultsUnanalysed, err := runRules(
-		rules,
-		gitRes.getDiffURL(gitRes.Body.Commits[0].ID),
-	)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("%s", err), 500)
-		return
+	// analyse all pushed commits
+	results := []RuleResults{}
+	allPassed := true
+	for _, commit := range gitRes.Body.Commits {
+		ruleResultsUnanalysed, err := runRules(
+			rules,
+			gitRes.getDiffURL(commit.ID),
+		)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("%s", err), 500)
+			return
+		}
+		ruleResultsAnalysed := checkRuleResults(
+			ruleResultsUnanalysed,
+			commit.ID,
+		)
+		if ruleResultsAnalysed.Pass != true {
+			allPassed = false
+		}
+		results = append(results, ruleResultsAnalysed)
 	}
 
 	// TODO: Notify recipients if fails checks
-	ruleResults := checkRuleResults(ruleResultsUnanalysed, gitRes.Body.Commits[0].ID)
-	if ruleResults.Pass == true {
-		fmt.Fprintf(w, "Diff contains no offenses\n\n")
+	if allPassed == true {
+		fmt.Fprintf(w, "Push contains no offenses\n\n")
 	} else {
 		fmt.Fprintf(w, "TODO: email list of recipients to be notified of violations\n\n")
 	}
