@@ -9,8 +9,15 @@ RULES_FILE = $(FIXT_DIR)/rules/gitrob.json
 DIFF_FILE = $(FIXT_DIR)/github_diff_response.json
 RULES_URL = https://raw.githubusercontent.com/michenriksen/gitrob/master/signatures.json
 
-install:
-	@go install -race .
+install: deps
+	@go install -race --ldflags=\"-s\" .
+
+deps: get-tools
+	@trash
+
+get-tools:
+	@go get -u \
+			github.com/rancher/trash
 
 lint:
 	@golint  -set_exit_status ./...
@@ -53,4 +60,4 @@ test-race:
 	@go test -race ./...
 
 
-.PHONY: test* run
+.PHONY: test* run deps install lint rules struct diff
