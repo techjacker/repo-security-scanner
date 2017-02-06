@@ -11,6 +11,17 @@ pipeline:
       branch: master
       event: push
 
+  image_to_quay:
+    image: docker:1.11
+    environment:
+      - DOCKER_HOST=tcp://127.0.0.1:2375
+    commands:
+      - docker login -u=${USERNAME} -p=${DOCKER_PASSWORD} quay.io
+      - docker tag repo-security-scanner quay.io/ukhomeofficedigital/repo-security-scanner:${DRONE_COMMIT_SHA}
+      - docker push quay.io/ukhomeofficedigital/repo-security-scanner:${DRONE_COMMIT_SHA}
+    when:
+      event: push
+      branch: master
 
 services:
   dind:
