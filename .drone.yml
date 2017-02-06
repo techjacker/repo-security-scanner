@@ -21,7 +21,7 @@ pipeline:
       - docker push quay.io/ukhomeofficedigital/repo-security-scanner:${DRONE_COMMIT_SHA}
     when:
       event: push
-      branch: feature/intergration-id 
+      branch: feature/intergration-id
 
 services:
   dind:
