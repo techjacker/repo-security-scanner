@@ -42,7 +42,7 @@ func Test_decodeGithubJSON(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := decodeGithubJSON(tt.args.body)
+			got, err := NewGithubResponse(tt.args.body)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("decodeGithubJSON() error = %v, wantErr %v", err, tt.wantErr)
 				return

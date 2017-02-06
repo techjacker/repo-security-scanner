@@ -7,6 +7,13 @@ import (
 	"net/http"
 )
 
+func NewGithubResponse(body io.Reader) (*GithubResponse, error) {
+	var gitJSON GithubResponse
+	dec := json.NewDecoder(body)
+	err := dec.Decode(&gitJSON)
+	return &gitJSON, err
+}
+
 // GithubResponse is for marshalling Github push event JSON payloads
 type GithubResponse struct {
 	Body struct {
@@ -30,11 +37,6 @@ type GithubResponse struct {
 	} `json:"headers"`
 }
 
-// GithubAPIEvent reveals information from a Github API event payload
-type GithubAPIEvent interface {
-	getDiffURL(string) string
-}
-
 // getDiffURL returns the URL of the Github Diff API endpoint for a particular commit
 func (g *GithubResponse) getDiffURL(commitID string) string {
 	return fmt.Sprintf(
@@ -51,13 +53,6 @@ func (g *GithubResponse) getDiffURLStem() string {
 		g.Body.Repository.Owner.Name,
 		g.Body.Repository.Name,
 	)
-}
-
-func decodeGithubJSON(body io.Reader) (*GithubResponse, error) {
-	var gitJSON GithubResponse
-	dec := json.NewDecoder(body)
-	err := dec.Decode(&gitJSON)
-	return &gitJSON, err
 }
 
 func getGithubDiff(url string) (*http.Response, error) {
