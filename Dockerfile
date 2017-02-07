@@ -1,17 +1,5 @@
-FROM quay.io/ukhomeofficedigital/nodejs-base:v6.9.1
-
-RUN useradd app
-
-USER app
-WORKDIR /home/app
-
-COPY package.json ./
-RUN npm install --no-optional
-
-COPY . .
-RUN npm test && \
-    npm prune --production
+FROM golang:1.6-onbuild
+ 
 
 EXPOSE 8080
-CMD ["npm", "start"]
 
