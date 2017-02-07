@@ -1,5 +1,5 @@
 FROM quay.io/ukhomeofficedigital/nodejs-base:v6.9.1
-
+ 
 RUN useradd app
 
 USER app
