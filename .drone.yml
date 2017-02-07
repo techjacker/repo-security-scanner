@@ -8,7 +8,7 @@ pipeline:
     commands:
       - docker build -t repo-security-scanner .
     when:
-      branch: master
+      branch: feature/intergration-id 
       event: push
 
   image_to_quay:
@@ -16,7 +16,7 @@ pipeline:
     environment:
       - DOCKER_HOST=tcp://127.0.0.1:2375
     commands:
-      - docker login -u="ukhomeofficedigital+repo_security_scanner" -p=${DOCKER_PASSWORD} quay.io
+      - docker login -u="ukhomeofficedigital+repo_security_scanner_bot" -p=${DOCKER_PASSWORD} quay.io
       - docker tag repo-security-scanner quay.io/ukhomeofficedigital/repo-security-scanner:${DRONE_COMMIT_SHA}
       - docker push quay.io/ukhomeofficedigital/repo-security-scanner:${DRONE_COMMIT_SHA}
     when:
