@@ -16,7 +16,7 @@ pipeline:
     environment:
       - DOCKER_HOST=tcp://127.0.0.1:2375
     commands:
-      - docker login -u=${USERNAME} -p=${DOCKER_PASSWORD} quay.io
+      - docker login -u="ukhomeofficegital+repo_security_scanner" -p=${DOCKER_PASSWORD} quay.io
       - docker tag repo-security-scanner quay.io/ukhomeofficedigital/repo-security-scanner:${DRONE_COMMIT_SHA}
       - docker push quay.io/ukhomeofficedigital/repo-security-scanner:${DRONE_COMMIT_SHA}
     when:
