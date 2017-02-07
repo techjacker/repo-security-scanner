@@ -8,7 +8,7 @@ pipeline:
     commands:
       - docker build -t repo-security-scanner .
     when:
-      branch: feature/intergration-id 
+      branch: master 
       event: push
 
   image_to_quay:
@@ -21,7 +21,7 @@ pipeline:
       - docker push quay.io/ukhomeofficedigital/repo-security-scanner:${DRONE_COMMIT_SHA}
     when:
       event: push
-      branch: feature/intergration-id
+      branch: master 
 
 services:
   dind:
