@@ -6,7 +6,7 @@ COMMIT_ID = f591c33a1b9500d0721b6664cfb6033d47a00793
 
 FIXT_DIR = test/fixtures
 RULES_FILE = $(FIXT_DIR)/rules/gitrob.json
-DIFF_FILE = $(FIXT_DIR)/github_diff_response.json
+DIFF_FILE = $(FIXT_DIR)/github_event_push.json
 RULES_URL = https://raw.githubusercontent.com/michenriksen/gitrob/master/signatures.json
 
 install: deps
@@ -36,7 +36,7 @@ diff:
 struct:
 	@gojson \
 		-name githubResponseFull \
-		-input test/fixtures/github_diff_response.json
+		-input test/fixtures/github_event_push.json
 
 watch:
 	@realize run

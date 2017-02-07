@@ -27,7 +27,7 @@ func Test_decodeGithubJSON(t *testing.T) {
 	}{
 		{
 			name: "Decodes github diff JSON response into struct",
-			args: args{getFixture("test/fixtures/github_diff_response.json")},
+			args: args{getFixture("test/fixtures/github_event_push.json")},
 			want: want{
 				CommitsID:              "47797c0123bc0f5adfcae3d3467a2ed12e72b2cb",
 				CommitsAdded:           []string{"ba.txt"},

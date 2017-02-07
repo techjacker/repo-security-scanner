@@ -37,7 +37,7 @@ func TestGithubHandler(t *testing.T) {
 	router.POST(testPath, GithubHandler(&diffValidator{getRules(t)}))
 
 	// no query params -> pass 'nil' as the third parameter
-	params := getFixture("test/fixtures/github_diff_response.json")
+	params := getFixture("test/fixtures/github_event_push.json")
 	r, err := http.NewRequest("POST", testPath, params)
 	if err != nil {
 		t.Fatal(err)
