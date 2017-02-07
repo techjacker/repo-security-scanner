@@ -2,17 +2,37 @@ package main
 
 import (
 	"fmt"
+	"net/http"
 
 	df "github.com/techjacker/diffence"
 )
 
-// RuleResults is the struct for revealing the result of diff rule analysis
-type RuleResults struct {
+// Stats analyses a series of diff rule results
+type Stats struct {
 	Pass bool
 	Info string
 }
 
-func checkRuleResults(ruleResults df.Results, commitID string) RuleResults {
+// DiffValidator validates diffs
+type DiffValidator interface {
+	Check(string) (df.Results, error)
+	Stat(df.Results, string) Stats
+}
+
+type diffValidator struct {
+	rules *[]df.Rule
+}
+
+func (d diffValidator) Check(url string) (df.Results, error) {
+	resp, err := getHTTP(url)
+	defer resp.Body.Close()
+	if err != nil {
+		return df.Results{}, err
+	}
+	return df.CheckDiffs(resp.Body, d.rules)
+}
+
+func (d diffValidator) Stat(ruleResults df.Results, commitID string) Stats {
 
 	dirty := false
 	info := fmt.Sprintf("Commit ID: %s\n", commitID)
@@ -27,17 +47,17 @@ func checkRuleResults(ruleResults df.Results, commitID string) RuleResults {
 		}
 	}
 
-	return RuleResults{
+	return Stats{
 		Pass: !dirty,
 		Info: info,
 	}
 }
 
-func runRules(rules *[]df.Rule, URL string) (df.Results, error) {
-	resp, err := getGithubDiff(URL)
-	defer resp.Body.Close()
+func getHTTP(url string) (*http.Response, error) {
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		return df.Results{}, err
+		return &http.Response{}, fmt.Errorf("Could not get diff: %s\n", err)
 	}
-	return df.CheckDiffs(resp.Body, rules)
+	req.Header.Set("Accept", "application/vnd.github.VERSION.diff")
+	return http.DefaultClient.Do(req)
 }

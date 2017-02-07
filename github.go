@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"net/http"
 )
 
+// NewGithubResponse marshalls a github event JSON payload into a struct
 func NewGithubResponse(body io.Reader) (*GithubResponse, error) {
 	var gitJSON GithubResponse
 	dec := json.NewDecoder(body)
@@ -53,13 +53,4 @@ func (g *GithubResponse) getDiffURLStem() string {
 		g.Body.Repository.Owner.Name,
 		g.Body.Repository.Name,
 	)
-}
-
-func getGithubDiff(url string) (*http.Response, error) {
-	req, err := http.NewRequest("GET", url, nil)
-	if err != nil {
-		return &http.Response{}, fmt.Errorf("Could not get diff: %s\n", err)
-	}
-	req.Header.Set("Accept", "application/vnd.github.VERSION.diff")
-	return http.DefaultClient.Do(req)
 }
