@@ -8,7 +8,6 @@ pipeline:
     commands:
       - docker build -t repo-security-scanner .
     when:
-      branch: master 
       event: push
 
   image_to_quay:
