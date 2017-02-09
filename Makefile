@@ -56,6 +56,13 @@ test-run:
 		-d @$(DIFF_FILE) \
 		http://localhost:$(PORT)/github
 
+test-run-dev:
+	@curl \
+                -X POST \
+                -d @$(DIFF_FILE) \
+                http://repo-security-scanner.notprod.homeoffice.gov.uk/github
+
+
 test:
 	@go test
 

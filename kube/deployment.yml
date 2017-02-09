@@ -19,12 +19,12 @@ spec:
         # https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/
         livenessProbe:
           httpGet:
-          path: /healthz
-          port: http
+            path: /healthz
+            port: http
         readinessProbe:
           httpGet:
-          path: /healthz
-          port: http
+            path: /healthz
+            port: http
         env:
           - name: GITHUB_PRIVATEKEY
             valueFrom:
