@@ -26,6 +26,7 @@ func main() {
 
 	// run server
 	router := httprouter.New()
+	router.GET("/healthz", HealthHandler)
 	router.POST("/github", GithubHandler(diffValidator{
 		rules:      rules,
 		diffGetter: getGithubDiff,

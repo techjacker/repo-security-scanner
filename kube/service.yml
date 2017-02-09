@@ -6,9 +6,18 @@ metadata:
     name: repo-security-scanner-service
   name: repo-security-scanner-service
 spec:
+  selector:
+    name: repo-security-scanner
   ports:
   - name: http
     port: 8080
     targetPort: 8080
-  selector:
-    name: repo-security-scanner
+  # https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/
+  livenessProbe:
+    httpGet:
+    path: /healthz
+    port: http
+  readinessProbe:
+    httpGet:
+    path: /healthz
+    port: http

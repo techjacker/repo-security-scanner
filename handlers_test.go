@@ -59,7 +59,7 @@ func TestGithubHandler(t *testing.T) {
 			params := getFixture(tt.args.githubPayloadPath)
 			r, err := http.NewRequest("POST", testPath, params)
 			if err != nil {
-				t.Fatal(err)
+				t.Error(err)
 			}
 			w := httptest.NewRecorder()
 			router.ServeHTTP(w, r)
@@ -70,6 +70,48 @@ func TestGithubHandler(t *testing.T) {
 			}
 			if strings.EqualFold(strings.TrimSpace(w.Body.String()), tt.wantResBody) != true {
 				t.Fatalf("Githubhandler returned unexpected body: got %v want %v",
+					w.Body.String(), tt.wantResBody)
+			}
+		})
+	}
+
+}
+
+func TestHealthHandler(t *testing.T) {
+	const (
+		testPath = "/healthz"
+	)
+
+	tests := []struct {
+		name           string
+		wantStatusCode int
+		wantResBody    string
+	}{
+		{
+			name:           "Healthcheck handler",
+			wantStatusCode: http.StatusOK,
+			wantResBody:    healthMsg,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+
+			router := httprouter.New()
+			router.GET(testPath, HealthHandler)
+
+			r, err := http.NewRequest("GET", testPath, nil)
+			if err != nil {
+				t.Error(err)
+			}
+			w := httptest.NewRecorder()
+			router.ServeHTTP(w, r)
+
+			if w.Code != tt.wantStatusCode {
+				t.Fatalf("Healthhandler returned unexpected status code: got %v want %v",
+					w.Code, tt.wantStatusCode)
+			}
+			if strings.EqualFold(strings.TrimSpace(w.Body.String()), tt.wantResBody) != true {
+				t.Fatalf("Healthhandler returned unexpected body: got %v want %v",
 					w.Body.String(), tt.wantResBody)
 			}
 		})

@@ -8,6 +8,7 @@ import (
 )
 
 const (
+	healthMsg  = "ok"
 	msgSuccess = "Push contains no offenses"
 	msgFail    = "TODO: email list of recipients to be notified of violations"
 )
@@ -47,4 +48,9 @@ func GithubHandler(dv DiffValidator) httprouter.Handle {
 			fmt.Fprintf(w, "%s\n", msgFail)
 		}
 	}
+}
+
+func HealthHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(healthMsg))
 }
