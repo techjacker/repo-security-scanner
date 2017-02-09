@@ -20,8 +20,6 @@ pipeline:
       - docker push quay.io/ukhomeofficedigital/repo-security-scanner:${DRONE_COMMIT_SHA}
     when:
       event: push
-#      branch: master
-
 
   deploy_to_dev:
     image: quay.io/ukhomeofficedigital/kd:latest
@@ -29,17 +27,11 @@ pipeline:
       - KUBE_SERVER=https://kube-dev.dsp.notprod.homeoffice.gov.uk
       - KUBE_NAMESPACE=dev-induction
       - INSECURE_SKIP_TLS_VERIFY=true
-
-
-      - INSECURE_SKIP_TLS_VERIFY=true
     commands:
       - cd kube
       - kd -f secrets.yml -f deployment.yml -f ingress.yml -f service.yml
     when:
       event: [deployment, push]
-
-
-
 
 services:
   dind:
