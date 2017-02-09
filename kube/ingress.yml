@@ -1,0 +1,14 @@
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: repo-security-scanner-ingress
+spec:
+  rules:
+  - host: repo-security-scanner.notprod.homeoffice.gov.uk
+    http:
+      paths:
+      - backend:
+          serviceName: repo-security-scanner-service
+          servicePort: http
+        path: /

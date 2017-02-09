@@ -1,0 +1,40 @@
+settings:
+  resources:
+    streams: streams.log
+    logs: logs.log
+    errors: errors.log
+  server:
+    enable: true
+    open: false
+    host: localhost
+    port: 5001
+  config:
+    flimit: 0
+projects:
+- name: repo-security-scanner
+  path: /
+  fmt: true
+  test: true
+  generate: false
+  bin: true
+  build: false
+  run: false
+  params: []
+  watcher:
+    before: []
+    after: []
+    paths:
+    - /
+    ignore_paths:
+    - vendor
+    - test
+    - rules
+    exts:
+    - .go
+    preview: false
+  cli:
+    streams: true
+  file:
+    streams: false
+    logs: false
+    errors: false
