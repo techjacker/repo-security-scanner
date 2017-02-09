@@ -12,12 +12,3 @@ spec:
   - name: http
     port: 8080
     targetPort: 8080
-  # https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/
-  livenessProbe:
-    httpGet:
-    path: /healthz
-    port: http
-  readinessProbe:
-    httpGet:
-    path: /healthz
-    port: http
