@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 	"os"
@@ -14,6 +15,10 @@ import (
 )
 
 func getFixture(filename string) io.Reader {
+	if filename == "" {
+		return bytes.NewReader([]byte(""))
+		// return ioutil.Discard
+	}
 	file, err := os.Open(filename)
 	if err != nil {
 		panic(err)

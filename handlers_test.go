@@ -28,6 +28,16 @@ func TestGithubHandler(t *testing.T) {
 		wantResBody    string
 	}{
 		{
+			name: "Empty body returns 4xx status code",
+			args: args{
+				githubPayloadPath: "",
+				rulesPath:         gitrobRules,
+				diffPath:          "",
+			},
+			wantStatusCode: http.StatusBadRequest,
+			wantResBody:    msgBadRequest,
+		},
+		{
 			name: "No offenses in diff",
 			args: args{
 				githubPayloadPath: "test/fixtures/github_event_push.json",
@@ -38,7 +48,7 @@ func TestGithubHandler(t *testing.T) {
 			wantResBody:    msgSuccess,
 		},
 		{
-			name: "No offenses in diff",
+			name: "1 offense in diff",
 			args: args{
 				githubPayloadPath: "test/fixtures/github_event_push.json",
 				rulesPath:         gitrobRules,
@@ -90,7 +100,7 @@ func TestHealthHandler(t *testing.T) {
 		{
 			name:           "Healthcheck handler",
 			wantStatusCode: http.StatusOK,
-			wantResBody:    healthMsg,
+			wantResBody:    msgHealthOk,
 		},
 	}
 	for _, tt := range tests {

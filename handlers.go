@@ -8,9 +8,10 @@ import (
 )
 
 const (
-	healthMsg  = "ok"
-	msgSuccess = "Push contains no offenses"
-	msgFail    = "TODO: email list of recipients to be notified of violations"
+	msgHealthOk   = "ok"
+	msgBadRequest = "bad request"
+	msgSuccess    = "Push contains no offenses"
+	msgFail       = "TODO: email list of recipients to be notified of violations"
 )
 
 // GithubHandler is a github integration HTTP handler
@@ -20,7 +21,7 @@ func GithubHandler(dv DiffValidator) httprouter.Handle {
 		// decode github push event payload
 		gitRes, err := NewGithubResponse(r.Body)
 		if err != nil {
-			http.Error(w, fmt.Sprintf("%s", err), 500)
+			http.Error(w, msgBadRequest, http.StatusBadRequest)
 			return
 		}
 
@@ -30,7 +31,7 @@ func GithubHandler(dv DiffValidator) httprouter.Handle {
 		for _, commit := range gitRes.Body.Commits {
 			ruleResults, err := dv.Check(gitRes.getDiffURL(commit.ID))
 			if err != nil {
-				http.Error(w, fmt.Sprintf("%s", err), 500)
+				http.Error(w, msgBadRequest, http.StatusBadRequest)
 				return
 			}
 			stats := dv.Stat(ruleResults, commit.ID)
@@ -52,5 +53,5 @@ func GithubHandler(dv DiffValidator) httprouter.Handle {
 
 func HealthHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(healthMsg))
+	w.Write([]byte(msgHealthOk))
 }
