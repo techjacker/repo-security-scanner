@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"io"
+	"strings"
 	"testing"
 )
 
@@ -39,22 +40,40 @@ func Test_decodeGithubJSON(t *testing.T) {
 			},
 			wantErr: false,
 		},
+		{
+			name: "Factory method validates decoded JSON",
+			args: args{
+				strings.NewReader(`{"missing": "everything"}`),
+			},
+			want: want{
+				CommitsID:            "",
+				CommitsAdded:         []string{""},
+				RepositoryName:       "",
+				RepositoryOwnerName:  "",
+				RepositoryOwnerEmail: nil,
+				HeadersXGithubEvent:  "",
+				GithubAPIDiffURL:     "",
+			},
+			wantErr: true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := NewGithubResponse(tt.args.body)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("decodeGithubJSON() error = %v, wantErr %v", err, tt.wantErr)
+				t.Fatalf("decodeGithubJSON() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			equals(t, got.Body.Commits[0].ID, tt.want.CommitsID)
-			equals(t, got.Body.Commits[0].Added, tt.want.CommitsAdded)
+			if len(got.Body.Commits) > 0 {
+				equals(t, got.Body.Commits[0].ID, tt.want.CommitsID)
+				equals(t, got.Body.Commits[0].Added, tt.want.CommitsAdded)
+				equals(t, got.getDiffURLStem(), tt.want.GithubAPIDiffURL)
+				equals(t, got.getDiffURL(tt.want.CommitsID), fmt.Sprintf("%s/%s", tt.want.GithubAPIDiffURL, tt.want.CommitsID))
+			}
 			equals(t, got.Body.Repository.Name, tt.want.RepositoryName)
 			equals(t, got.Body.Repository.Owner.Name, tt.want.RepositoryOwnerName)
 			equals(t, got.Body.Repository.Owner.Email, tt.want.RepositoryOwnerEmail)
 			equals(t, got.Headers.XGithubEvent, tt.want.HeadersXGithubEvent)
-			equals(t, got.getDiffURLStem(), tt.want.GithubAPIDiffURL)
-			equals(t, got.getDiffURL(tt.want.CommitsID), fmt.Sprintf("%s/%s", tt.want.GithubAPIDiffURL, tt.want.CommitsID))
 		})
 	}
 }

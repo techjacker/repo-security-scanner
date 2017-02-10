@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 )
@@ -11,6 +12,9 @@ func NewGithubResponse(body io.Reader) (*GithubResponse, error) {
 	var gitJSON GithubResponse
 	dec := json.NewDecoder(body)
 	err := dec.Decode(&gitJSON)
+	if err == nil {
+		err = gitJSON.validate()
+	}
 	return &gitJSON, err
 }
 
@@ -37,8 +41,26 @@ type GithubResponse struct {
 	} `json:"headers"`
 }
 
+func (g *GithubResponse) validate() error {
+	if len(g.Body.Commits) < 1 {
+		return errors.New("empty payload")
+	}
+	for _, c := range g.Body.Commits {
+		if len(c.ID) < 1 {
+			return errors.New("missing commit ID")
+		}
+	}
+	if len(g.Body.Repository.Name) < 1 {
+		return errors.New("missing repository name")
+	}
+	if len(g.Headers.XGithubEvent) < 1 {
+		return errors.New("missing github event type")
+	}
+	return nil
+}
+
 // getDiffURL returns the URL of the Github Diff API endpoint for a particular commit
-func (g *GithubResponse) getDiffURL(commitID string) string {
+func (g GithubResponse) getDiffURL(commitID string) string {
 	return fmt.Sprintf(
 		"%s/%s",
 		g.getDiffURLStem(),

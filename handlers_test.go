@@ -28,9 +28,9 @@ func TestGithubHandler(t *testing.T) {
 		wantResBody    string
 	}{
 		{
-			name: "Empty body returns 4xx status code",
+			name: "Incorrect JSON payload returns 4xx status code",
 			args: args{
-				githubPayloadPath: "",
+				githubPayloadPath: "test/fixtures/nonsense.json",
 				rulesPath:         gitrobRules,
 				diffPath:          "",
 			},
