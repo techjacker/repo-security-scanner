@@ -1,5 +1,5 @@
-- [ ] Add middleware - validate = git push event + tests
 - [ ] Add middleware - validate = from github origin + tests
+	- use gorilla middleware vs write own
 
 
 - [ ] type []Stats == logger = strings.Stringer() interface -> for creating string for email

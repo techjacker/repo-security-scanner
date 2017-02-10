@@ -20,41 +20,30 @@ func NewGithubResponse(body io.Reader) (*GithubResponse, error) {
 
 // GithubResponse is for marshalling Github push event JSON payloads
 type GithubResponse struct {
-	Body struct {
-		Commits []struct {
-			Added []string `json:"added"`
-			ID    string   `json:"id"`
-		} `json:"commits"`
-		Repository struct {
-			Name  string `json:"name"`
-			Owner struct {
-				Email interface{} `json:"email"`
-				Name  string      `json:"name"`
-			} `json:"owner"`
-		} `json:"repository"`
-	} `json:"body"`
-	// Installation struct {
-	// 	ID int64 `json:"id"`
-	// } `json:"installation"`
-	Headers struct {
-		XGithubEvent string `json:"x-github-event"`
-	} `json:"headers"`
+	Commits []struct {
+		Added []string `json:"added"`
+		ID    string   `json:"id"`
+	} `json:"commits"`
+	Repository struct {
+		Name  string `json:"name"`
+		Owner struct {
+			Email interface{} `json:"email"`
+			Name  string      `json:"name"`
+		} `json:"owner"`
+	} `json:"repository"`
 }
 
 func (g *GithubResponse) validate() error {
-	if len(g.Body.Commits) < 1 {
+	if len(g.Commits) < 1 {
 		return errors.New("empty payload")
 	}
-	for _, c := range g.Body.Commits {
+	for _, c := range g.Commits {
 		if len(c.ID) < 1 {
 			return errors.New("missing commit ID")
 		}
 	}
-	if len(g.Body.Repository.Name) < 1 {
+	if len(g.Repository.Name) < 1 {
 		return errors.New("missing repository name")
-	}
-	if len(g.Headers.XGithubEvent) < 1 {
-		return errors.New("missing github event type")
 	}
 	return nil
 }
@@ -68,11 +57,10 @@ func (g GithubResponse) getDiffURL(commitID string) string {
 	)
 }
 
-// getDiffURLStem/${CommitID}
 func (g *GithubResponse) getDiffURLStem() string {
 	return fmt.Sprintf(
 		"https://api.github.com/repos/%s/%s/commits",
-		g.Body.Repository.Owner.Name,
-		g.Body.Repository.Name,
+		g.Repository.Owner.Name,
+		g.Repository.Name,
 	)
 }

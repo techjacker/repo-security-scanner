@@ -35,7 +35,6 @@ func Test_decodeGithubJSON(t *testing.T) {
 				RepositoryName:       "testgithubintegration",
 				RepositoryOwnerName:  "ukhomeoffice-bot-test",
 				RepositoryOwnerEmail: nil,
-				HeadersXGithubEvent:  "push",
 				GithubAPIDiffURL:     "https://api.github.com/repos/ukhomeoffice-bot-test/testgithubintegration/commits",
 			},
 			wantErr: false,
@@ -51,7 +50,6 @@ func Test_decodeGithubJSON(t *testing.T) {
 				RepositoryName:       "",
 				RepositoryOwnerName:  "",
 				RepositoryOwnerEmail: nil,
-				HeadersXGithubEvent:  "",
 				GithubAPIDiffURL:     "",
 			},
 			wantErr: true,
@@ -64,16 +62,15 @@ func Test_decodeGithubJSON(t *testing.T) {
 				t.Fatalf("decodeGithubJSON() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if len(got.Body.Commits) > 0 {
-				equals(t, got.Body.Commits[0].ID, tt.want.CommitsID)
-				equals(t, got.Body.Commits[0].Added, tt.want.CommitsAdded)
+			if len(got.Commits) > 0 {
+				equals(t, got.Commits[0].ID, tt.want.CommitsID)
+				equals(t, got.Commits[0].Added, tt.want.CommitsAdded)
 				equals(t, got.getDiffURLStem(), tt.want.GithubAPIDiffURL)
 				equals(t, got.getDiffURL(tt.want.CommitsID), fmt.Sprintf("%s/%s", tt.want.GithubAPIDiffURL, tt.want.CommitsID))
 			}
-			equals(t, got.Body.Repository.Name, tt.want.RepositoryName)
-			equals(t, got.Body.Repository.Owner.Name, tt.want.RepositoryOwnerName)
-			equals(t, got.Body.Repository.Owner.Email, tt.want.RepositoryOwnerEmail)
-			equals(t, got.Headers.XGithubEvent, tt.want.HeadersXGithubEvent)
+			equals(t, got.Repository.Name, tt.want.RepositoryName)
+			equals(t, got.Repository.Owner.Name, tt.want.RepositoryOwnerName)
+			equals(t, got.Repository.Owner.Email, tt.want.RepositoryOwnerEmail)
 		})
 	}
 }
