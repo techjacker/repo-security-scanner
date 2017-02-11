@@ -17,7 +17,6 @@ type Stats struct {
 type DiffValidator interface {
 	Check(string) (df.Results, error)
 	Stat(df.Results, string) Stats
-	// getHTTP(string) (*http.Response, error)
 }
 
 type diffValidator struct {

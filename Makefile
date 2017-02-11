@@ -17,10 +17,8 @@ deps: get-tools
 	@trash
 
 get-tools:
-	@go get -u \
-			github.com/rancher/trash
+	@go get -u github.com/rancher/trash
 
-# @interfacer $(go list ./... | grep -v /vendor/)
 lint:
 	@golint
 	@go vet
@@ -31,13 +29,13 @@ rules:
 # curl -s https://api.github.com/repos/ukhomeoffice-bot-test/testgithubintegration/commits/f591c33a1b9500d0721b6664cfb6033d47a00793 -H "Accept: application/vnd.github.VERSION.diff"
 diff-no-offenses:
 	@curl -s \
-		https://api.github.com/repos/$(USER)/$(REPO)/commits/$(OFFENSES_X0) \
-		-H "Accept: application/vnd.github.VERSION.diff"
+		-H "Accept: application/vnd.github.VERSION.diff" \
+		https://api.github.com/repos/$(USER)/$(REPO)/commits/$(OFFENSES_X0)
 
 diff-offenses:
 	@curl -s \
-		https://api.github.com/repos/$(USER)/$(REPO)/commits/$(OFFENSES_X1) \
-		-H "Accept: application/vnd.github.VERSION.diff"
+		-H "Accept: application/vnd.github.VERSION.diff" \
+		https://api.github.com/repos/$(USER)/$(REPO)/commits/$(OFFENSES_X1)
 
 struct:
 	@gojson \
@@ -53,14 +51,16 @@ run:
 test-run:
 	@curl \
 		-X POST \
+		-H "x-github-event: push" \
 		-d @$(DIFF_FILE) \
 		http://localhost:$(PORT)/github
 
 test-run-dev:
 	@curl \
-                -X POST \
-                -d @$(DIFF_FILE) \
-                http://repo-security-scanner.notprod.homeoffice.gov.uk/github
+		-X POST \
+		-H "x-github-event: push" \
+		-d @$(DIFF_FILE) \
+		http://repo-security-scanner.notprod.homeoffice.gov.uk/github
 
 
 test:
