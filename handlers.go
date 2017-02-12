@@ -52,9 +52,9 @@ func GithubHandler(dc diffence.Checker, dg DiffGetterHTTP) httprouter.Handle {
 		// stringify results vs pass to logger
 		if results.Matches() > 0 {
 			fmt.Fprintf(w, "%s\n", msgFail)
-		} else {
-			fmt.Fprintf(w, "%s\n", msgSuccess)
+			return
 		}
+		fmt.Fprintf(w, "%s\n", msgSuccess)
 	}
 }
 
