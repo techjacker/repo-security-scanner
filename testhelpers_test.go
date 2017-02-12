@@ -26,7 +26,7 @@ func getFixture(filename string) io.Reader {
 	return file
 }
 
-func getDiffenceRules(t *testing.T, rulesPath string) *[]diffence.Rule {
+func getTestRules(t *testing.T, rulesPath string) *[]diffence.Rule {
 	// get rules
 	_, cmd, _, _ := runtime.Caller(0)
 	rules, err := diffence.ReadRulesFromFile(path.Join(path.Dir(cmd), rulesPath))

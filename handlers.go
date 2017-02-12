@@ -17,7 +17,7 @@ const (
 )
 
 // GithubHandler is a github integration HTTP handler
-func GithubHandler(dv DiffValidator) httprouter.Handle {
+func GithubHandler(dc DiffChecker, dg DiffGetterHTTP) httprouter.Handle {
 	return func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 
 		if r.Header.Get(headerGithubEvt) != "push" {
@@ -34,15 +34,16 @@ func GithubHandler(dv DiffValidator) httprouter.Handle {
 		}
 
 		// analyse all pushed commits
-		results := []Stats{}
+		results := []DiffStats{}
 		allPassed := true
 		for _, commit := range gitRes.Commits {
-			ruleResults, err := dv.Check(gitRes.getDiffURL(commit.ID))
+			resp, err := dg.Get(gitRes.getDiffURL(commit.ID))
 			if err != nil {
 				http.Error(w, msgBadRequest, http.StatusBadRequest)
 				return
 			}
-			stats := dv.Stat(ruleResults, commit.ID)
+			diffResults, err := dc.Check(resp.Body)
+			stats := statDiffResults(diffResults, commit.ID)
 			if stats.Pass != true {
 				allPassed = false
 			}

@@ -8,8 +8,17 @@ import (
 	"testing"
 
 	"github.com/julienschmidt/httprouter"
-	"github.com/techjacker/diffence"
 )
+
+type testDiffGetter struct {
+	fixt string
+}
+
+func (t testDiffGetter) Get(_ string) (*http.Response, error) {
+	return &http.Response{
+		Body: ioutil.NopCloser(getFixture(t.fixt)),
+	}, nil
+}
 
 func TestGithubHandler(t *testing.T) {
 	const (
@@ -78,7 +87,8 @@ func TestGithubHandler(t *testing.T) {
 
 			router := httprouter.New()
 			router.POST(testPath, GithubHandler(
-				NewTestDiffValidator(getDiffenceRules(t, tt.args.rulesPath), tt.args.diffPath),
+				diffChecker{getTestRules(t, tt.args.rulesPath)},
+				testDiffGetter{tt.args.diffPath},
 			))
 
 			params := getFixture(tt.args.githubPayloadPath)
@@ -143,26 +153,4 @@ func TestHealthHandler(t *testing.T) {
 		})
 	}
 
-}
-
-type TestDiffValidator struct {
-	diffValidator
-}
-
-func NewTestDiffValidator(rules *[]diffence.Rule, fixt string) *TestDiffValidator {
-	tdv := TestDiffValidator{
-		diffValidator{
-			rules:      rules,
-			diffGetter: testHTTPGetterFactory(fixt),
-		},
-	}
-	return &tdv
-}
-
-func testHTTPGetterFactory(fixt string) httpGetter {
-	return func(url string) (*http.Response, error) {
-		return &http.Response{
-			Body: ioutil.NopCloser(getFixture(fixt)),
-		}, nil
-	}
 }
