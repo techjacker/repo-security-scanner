@@ -36,7 +36,6 @@ func GithubHandler(dc diffence.Checker, dg DiffGetterHTTP) httprouter.Handle {
 
 		// analyse all pushed commits
 		results := diffence.Results{}
-		allPassed := true
 		for _, commit := range gitRes.Commits {
 			resp, err := dg.Get(gitRes.getDiffURL(commit.ID))
 			if err != nil {
@@ -49,18 +48,15 @@ func GithubHandler(dc diffence.Checker, dg DiffGetterHTTP) httprouter.Handle {
 				http.Error(w, msgBadRequest, http.StatusBadRequest)
 				return
 			}
-			if diffRes.Matched == true {
-				allPassed = false
-			}
 			results = append(results, diffRes)
 		}
 
 		// TODO: Notify recipients if fails checks
 		// stringify results vs pass to logger
-		if allPassed == true {
-			fmt.Fprintf(w, "%s\n", msgSuccess)
-		} else {
+		if results.Matches() > 0 {
 			fmt.Fprintf(w, "%s\n", msgFail)
+		} else {
+			fmt.Fprintf(w, "%s\n", msgSuccess)
 		}
 	}
 }
