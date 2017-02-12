@@ -57,20 +57,21 @@ func Test_decodeGithubJSON(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := NewGithubResponse(tt.args.body)
+			gitRes := &GithubResponse{}
+			err := DecodeJSON(tt.args.body, gitRes)
 			if (err != nil) != tt.wantErr {
 				t.Fatalf("decodeGithubJSON() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if len(got.Commits) > 0 {
-				equals(t, got.Commits[0].ID, tt.want.CommitsID)
-				equals(t, got.Commits[0].Added, tt.want.CommitsAdded)
-				equals(t, got.getDiffURLStem(), tt.want.GithubAPIDiffURL)
-				equals(t, got.getDiffURL(tt.want.CommitsID), fmt.Sprintf("%s/%s", tt.want.GithubAPIDiffURL, tt.want.CommitsID))
+			if len(gitRes.Commits) > 0 {
+				equals(t, gitRes.Commits[0].ID, tt.want.CommitsID)
+				equals(t, gitRes.Commits[0].Added, tt.want.CommitsAdded)
+				equals(t, gitRes.getDiffURLStem(), tt.want.GithubAPIDiffURL)
+				equals(t, gitRes.getDiffURL(tt.want.CommitsID), fmt.Sprintf("%s/%s", tt.want.GithubAPIDiffURL, tt.want.CommitsID))
 			}
-			equals(t, got.Repository.Name, tt.want.RepositoryName)
-			equals(t, got.Repository.Owner.Name, tt.want.RepositoryOwnerName)
-			equals(t, got.Repository.Owner.Email, tt.want.RepositoryOwnerEmail)
+			equals(t, gitRes.Repository.Name, tt.want.RepositoryName)
+			equals(t, gitRes.Repository.Owner.Name, tt.want.RepositoryOwnerName)
+			equals(t, gitRes.Repository.Owner.Email, tt.want.RepositoryOwnerEmail)
 		})
 	}
 }

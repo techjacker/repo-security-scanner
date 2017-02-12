@@ -20,20 +20,18 @@ const (
 // GithubHandler is a github integration HTTP handler
 func GithubHandler(dc diffence.Checker, dg DiffGetterHTTP) httprouter.Handle {
 	return func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-
 		if r.Header.Get(headerGithubEvt) != "push" {
 			w.WriteHeader(http.StatusOK)
 			w.Write([]byte(msgIgnore))
 			return
 		}
-
 		// decode github push event payload
-		gitRes, err := NewGithubResponse(r.Body)
+		gitRes := &GithubResponse{}
+		err := DecodeJSON(r.Body, gitRes)
 		if err != nil {
 			http.Error(w, msgBadRequest, http.StatusBadRequest)
 			return
 		}
-
 		// analyse all pushed commits
 		results := diffence.Results{}
 		for _, commit := range gitRes.Commits {
@@ -50,7 +48,6 @@ func GithubHandler(dc diffence.Checker, dg DiffGetterHTTP) httprouter.Handle {
 			}
 			results = append(results, diffRes)
 		}
-
 		// TODO: Notify recipients if fails checks
 		// stringify results vs pass to logger
 		if results.Matches() > 0 {

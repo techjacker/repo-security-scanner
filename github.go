@@ -7,15 +7,26 @@ import (
 	"io"
 )
 
-// NewGithubResponse marshalls a github event JSON payload into a struct
-func NewGithubResponse(body io.Reader) (*GithubResponse, error) {
-	var gitJSON GithubResponse
-	dec := json.NewDecoder(body)
-	err := dec.Decode(&gitJSON)
-	if err == nil {
-		err = gitJSON.validate()
+// Valid exposes a method to validate a type
+type Valid interface {
+	OK() error
+}
+
+// DecodeJSON marshalls JSON into a struct
+func DecodeJSON(r io.Reader, v interface{}) error {
+	err := json.NewDecoder(r).Decode(v)
+	if err != nil {
+		return err
 	}
-	return &gitJSON, err
+	obj, ok := v.(Valid)
+	if !ok {
+		return nil // no OK method
+	}
+	err = obj.OK()
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 // GithubResponse is for marshalling Github push event JSON payloads
@@ -33,7 +44,8 @@ type GithubResponse struct {
 	} `json:"repository"`
 }
 
-func (g *GithubResponse) validate() error {
+// OK validates a marshalled struct
+func (g *GithubResponse) OK() error {
 	if len(g.Commits) < 1 {
 		return errors.New("empty payload")
 	}
