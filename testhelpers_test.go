@@ -29,7 +29,7 @@ func getFixture(filename string) io.Reader {
 func getTestRules(t *testing.T, rulesPath string) *[]diffence.Rule {
 	// get rules
 	_, cmd, _, _ := runtime.Caller(0)
-	rules, err := diffence.ReadRulesFromFile(path.Join(path.Dir(cmd), rulesPath))
+	rules, err := diffence.LoadRulesJSON(path.Join(path.Dir(cmd), rulesPath))
 	if err != nil {
 		t.Fatal(fmt.Sprintf("Cannot read rule file: %s\n", err))
 	}

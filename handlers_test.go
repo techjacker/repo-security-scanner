@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/julienschmidt/httprouter"
+	"github.com/techjacker/diffence"
 )
 
 type testDiffGetter struct {
@@ -87,7 +88,7 @@ func TestGithubHandler(t *testing.T) {
 
 			router := httprouter.New()
 			router.POST(testPath, GithubHandler(
-				diffChecker{getTestRules(t, tt.args.rulesPath)},
+				diffence.DiffChecker{getTestRules(t, tt.args.rulesPath)},
 				testDiffGetter{tt.args.diffPath},
 			))
 

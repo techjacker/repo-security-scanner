@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
+	"github.com/techjacker/diffence"
 )
 
 const (
@@ -17,7 +18,7 @@ const (
 )
 
 // GithubHandler is a github integration HTTP handler
-func GithubHandler(dc DiffChecker, dg DiffGetterHTTP) httprouter.Handle {
+func GithubHandler(dc diffence.Checker, dg DiffGetterHTTP) httprouter.Handle {
 	return func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 
 		if r.Header.Get(headerGithubEvt) != "push" {
@@ -34,7 +35,7 @@ func GithubHandler(dc DiffChecker, dg DiffGetterHTTP) httprouter.Handle {
 		}
 
 		// analyse all pushed commits
-		results := []DiffStats{}
+		results := diffence.Results{}
 		allPassed := true
 		for _, commit := range gitRes.Commits {
 			resp, err := dg.Get(gitRes.getDiffURL(commit.ID))
@@ -42,12 +43,16 @@ func GithubHandler(dc DiffChecker, dg DiffGetterHTTP) httprouter.Handle {
 				http.Error(w, msgBadRequest, http.StatusBadRequest)
 				return
 			}
-			diffResults, err := dc.Check(resp.Body)
-			stats := statDiffResults(diffResults, commit.ID)
-			if stats.Pass != true {
+			diffRes, err := dc.Check(resp.Body)
+			resp.Body.Close()
+			if err != nil {
+				http.Error(w, msgBadRequest, http.StatusBadRequest)
+				return
+			}
+			if diffRes.Matched == true {
 				allPassed = false
 			}
-			results = append(results, stats)
+			results = append(results, diffRes)
 		}
 
 		// TODO: Notify recipients if fails checks

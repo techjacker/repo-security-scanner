@@ -10,25 +10,25 @@ import (
 	"github.com/techjacker/diffence"
 )
 
+const (
+	gitrobRules = "rules/gitrob.json"
+	serverPort  = 8080
+)
+
 func getRules(rulesPath string) *[]diffence.Rule {
 	_, cmd, _, _ := runtime.Caller(0)
-	rules, err := diffence.ReadRulesFromFile(path.Join(path.Dir(cmd), rulesPath))
+	rules, err := diffence.LoadRulesJSON(path.Join(path.Dir(cmd), rulesPath))
 	if err != nil {
 		panic(fmt.Sprintf("Cannot read rule file: %s\n", err))
 	}
 	return rules
 }
 
-const (
-	gitrobRules = "rules/gitrob.json"
-	serverPort  = 8080
-)
-
 func main() {
 	router := httprouter.New()
 	router.GET("/healthz", HealthHandler)
 	router.POST("/github", GithubHandler(
-		diffChecker{getRules(gitrobRules)},
+		diffence.DiffChecker{getRules(gitrobRules)},
 		diffGetterGithub{},
 	))
 	fmt.Printf("Server listening on port: %d", serverPort)
