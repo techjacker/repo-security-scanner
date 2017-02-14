@@ -4,27 +4,20 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/julienschmidt/httprouter"
 	"github.com/techjacker/diffence"
 )
 
 const (
-	headerGithubEvt = "x-github-event"
-	msgHealthOk     = "ok"
-	msgBadRequest   = "bad request"
-	msgIgnore       = "Not a push evt; ignoring"
-	msgSuccess      = "Push contains no offenses"
-	msgFail         = "TODO: email list of recipients to be notified of violations"
+	msgHealthOk   = "ok"
+	msgBadRequest = "bad request"
+	msgIgnore     = "Not a push evt; ignoring"
+	msgSuccess    = "Push contains no offenses"
+	msgFail       = "TODO: email list of recipients to be notified of violations"
 )
 
 // GithubHandler is a github integration HTTP handler
-func GithubHandler(dc diffence.Checker, dg DiffGetterHTTP) httprouter.Handle {
-	return func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-		if r.Header.Get(headerGithubEvt) != "push" {
-			w.WriteHeader(http.StatusOK)
-			w.Write([]byte(msgIgnore))
-			return
-		}
+func GithubHandler(dc diffence.Checker, dg DiffGetterHTTP) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// decode github push event payload
 		gitRes := &GithubResponse{}
 		err := DecodeJSON(r.Body, gitRes)
@@ -55,11 +48,11 @@ func GithubHandler(dc diffence.Checker, dg DiffGetterHTTP) httprouter.Handle {
 			return
 		}
 		fmt.Fprintf(w, "%s\n", msgSuccess)
-	}
+	})
 }
 
 // HealthHandler is an endpoint for healthchecks
-func HealthHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+func HealthHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(msgHealthOk))
 }

@@ -1,5 +1,7 @@
 PORT = 8080
 
+GITHUB_SECRET = $(shell echo $(GITHUB_WEBHOOKSECRET))
+
 USER = ukhomeoffice-bot-test
 REPO = testgithubintegration
 OFFENSES_X0 = 47797c0123bc0f5adfcae3d3467a2ed12e72b2cb
@@ -48,29 +50,34 @@ watch:
 run:
 	@go build -race . && ./repo-security-scanner
 
+mac-diff-file:
+	@cat $(DIFF_FILE) | openssl sha1 -hmac $(GITHUB_SECRET) | sed 's/^.* //'
+
 test-run:
-	@curl \
+	@wget -O- \
 		-X POST \
-		-H "x-github-event: push" \
-		-d @$(DIFF_FILE) \
+		--header="X-GitHub-Event: push" \
+		--header="X-Hub-Signature: sha1=$(shell make mac-diff-file)" \
+		--post-file "$(DIFF_FILE)" \
+		http://localhost:$(PORT)/github
+
+test-run-fail:
+	@wget -O- \
+		-X POST \
+		--header="X-GitHub-Event: push" \
+		--header="X-Hub-Signature: sha1=123456" \
+		--post-file "$(DIFF_FILE)" \
 		http://localhost:$(PORT)/github
 
 test-run-dev:
 	@curl \
 		-X POST \
 		-H "x-github-event: push" \
+		--header="X-Hub-Signature: sha1=$(shell make mac-diff-file)" \
 		-d @$(DIFF_FILE) \
 		http://repo-security-scanner.notprod.homeoffice.gov.uk/github
 
-
 test:
 	@go test
-
-test-cover:
-	@go test -cover
-
-test-race:
-	@go test -race
-
 
 .PHONY: test* run deps install lint rules struct diff
