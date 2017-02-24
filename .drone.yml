@@ -29,7 +29,7 @@ pipeline:
       - INSECURE_SKIP_TLS_VERIFY=true
     commands:
       - cd kube
-      - kd -f secrets.yml -f deployment.yml -f ingress.yml -f service.yml
+      - kd -f deployment.yml -f ingress.yml -f service.yml
     when:
       event: [deployment, push]
 

@@ -29,8 +29,13 @@ spec:
           - name: GITHUB_PRIVATEKEY
             valueFrom:
               secretKeyRef:
-                name: secrets
+                name: repo-security-scanner
                 key: GITHUB_PRIVATEKEY
+          - name: GITHUB_WEBHOOKSECRET
+            valueFrom:
+              secretKeyRef:
+                name: repo-security-scanner
+                key: GITHUB_WEBHOOKSECRET
         resources:
           limits:
             cpu: 250m

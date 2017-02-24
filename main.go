@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"os"
 	"path"
 	"runtime"
 
@@ -11,8 +12,11 @@ import (
 )
 
 const (
-	gitrobRules = "rules/gitrob.json"
-	serverPort  = 8080
+	headerGithubMAC     = "X-Hub-Signature"
+	headerGithubEvt     = "X-Github-Event"
+	githubWebhookSecret = "GITHUB_WEBHOOKSECRET"
+	gitrobRules         = "rules/gitrob.json"
+	serverPort          = 8080
 )
 
 func getRules(rulesPath string) *[]diffence.Rule {
@@ -24,13 +28,25 @@ func getRules(rulesPath string) *[]diffence.Rule {
 	return rules
 }
 
+func getEnvVar(name string) []byte {
+	secretStr := os.Getenv(name)
+	if len(secretStr) < 1 {
+		panic(fmt.Sprintf("Env var:%s not set in environment", name))
+	}
+	return []byte(secretStr)
+}
+
 func main() {
 	router := httprouter.New()
-	router.GET("/healthz", HealthHandler)
-	router.POST("/github", GithubHandler(
-		diffence.DiffChecker{getRules(gitrobRules)},
-		diffGetterGithub{},
+	router.Handler("GET", "/healthz", http.HandlerFunc(HealthHandler))
+	router.Handler("POST", "/github", Adapt(
+		GithubHandler(
+			diffence.DiffChecker{getRules(gitrobRules)},
+			diffGetterGithub{},
+		),
+		AuthMiddleware(GithubAuthenticator{getEnvVar(githubWebhookSecret)}),
 	))
+
 	fmt.Printf("Server listening on port: %d", serverPort)
 	http.ListenAndServe(fmt.Sprintf(":%d", serverPort), router)
 }
