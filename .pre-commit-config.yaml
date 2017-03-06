@@ -4,7 +4,6 @@
     -   id: check-added-large-files
     -   id: check-json
     -   id: check-merge-conflict
-    # -   id: check-yaml
     -   id: detect-private-key
     -   id: end-of-file-fixer
     -   id: forbid-new-submodules
@@ -13,5 +12,3 @@
     sha: cab517ac1132ea76603bd51ba5a95305f81bb2ba
     hooks:
     -   id: gofmt
-    -   id: gofix
-    -   id: govet

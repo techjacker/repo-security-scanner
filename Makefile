@@ -12,6 +12,9 @@ RULES_FILE = $(FIXT_DIR)/rules/gitrob.json
 DIFF_FILE = $(FIXT_DIR)/github_event_push.json
 RULES_URL = https://raw.githubusercontent.com/michenriksen/gitrob/master/signatures.json
 
+cli:
+	@go install -race ./cmd/scanrepo
+
 install: deps
 	@go install -race --ldflags=\"-s\" .
 

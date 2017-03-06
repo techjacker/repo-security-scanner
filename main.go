@@ -41,7 +41,7 @@ func main() {
 	router.Handler("GET", "/healthz", http.HandlerFunc(HealthHandler))
 	router.Handler("POST", "/github", Adapt(
 		GithubHandler(
-			diffence.DiffChecker{getRules(gitrobRules)},
+			diffence.DiffChecker{Rules: getRules(gitrobRules)},
 			diffGetterGithub{},
 		),
 		AuthMiddleware(GithubAuthenticator{getEnvVar(githubWebhookSecret)}),
