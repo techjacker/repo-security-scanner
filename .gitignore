@@ -1,5 +1,5 @@
+release
 /repo-security-scanner
-# Logs
 logs
 *.log
 npm-debug.log*

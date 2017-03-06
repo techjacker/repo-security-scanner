@@ -73,7 +73,7 @@ func TestGithubHandler(t *testing.T) {
 
 			router := httprouter.New()
 			router.Handler("POST", testPath, GithubHandler(
-				diffence.DiffChecker{getTestRules(t, tt.args.rulesPath)},
+				diffence.DiffChecker{Rules: getTestRules(t, tt.args.rulesPath)},
 				testDiffGetter{tt.args.diffPath},
 			))
 
