@@ -18,3 +18,14 @@ Check the entire history of the current branch for secrets.
 ```
 $ git log -p | scanrepo
 ```
+
+-----------------------------------------------------------
+### Add false positives to `.secignore`
+
+```
+$ cat .secignore
+file/that/is/not/really/a/secret/but/looks/like/one/to/diffence
+these/pems/are/ok/*.pem
+```
+
+[See example in this repo](./.secignore).
