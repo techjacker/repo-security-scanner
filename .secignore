@@ -1,0 +1,2 @@
+.env
+kube/secrets.yml

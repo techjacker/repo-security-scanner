@@ -36,7 +36,10 @@ func main() {
 		return
 	}
 
-	diff := diffence.DiffChecker{Rules: rules}
+	diff := diffence.DiffChecker{
+		Rules:   rules,
+		Ignorer: diffence.NewIgnorerFromFile(".secignore"),
+	}
 	res, err := diff.Check(bufio.NewReader(os.Stdin))
 	if err != nil {
 		log.Fatalf("Error reading diff\n%s\n", err)
