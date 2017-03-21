@@ -1,0 +1,30 @@
+---
+version: "2.1"
+
+services:
+
+  server:
+    build:
+      context: .
+    env_file: .env
+    environment:
+      - GITHUB_WEBHOOKSECRET
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    ports:
+      - 8080:8080
+
+  elasticsearch:
+    restart: always
+    image: elasticsearch:2
+    ports:
+      - 9200:9200
+    expose:
+      - "9200"
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:9200"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
