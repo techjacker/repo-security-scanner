@@ -31,6 +31,7 @@ func DecodeJSON(r io.Reader, v interface{}) error {
 
 // GithubResponse is for marshalling Github push event JSON payloads
 type GithubResponse struct {
+	Compare string
 	Commits []struct {
 		Added []string `json:"added"`
 		ID    string   `json:"id"`
@@ -46,6 +47,9 @@ type GithubResponse struct {
 
 // OK validates a marshalled struct
 func (g *GithubResponse) OK() error {
+	if len(g.Compare) < 1 {
+		return errors.New("missing compare URL")
+	}
 	if len(g.Commits) < 1 {
 		return errors.New("empty payload")
 	}

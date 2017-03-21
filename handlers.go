@@ -16,7 +16,7 @@ const (
 )
 
 // GithubHandler is a github integration HTTP handler
-func GithubHandler(dc diffence.Checker, dg DiffGetterHTTP) http.Handler {
+func GithubHandler(dc diffence.Checker, dg DiffGetterHTTP, log Log) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// decode github push event payload
 		gitRes := &GithubResponse{}
@@ -41,13 +41,23 @@ func GithubHandler(dc diffence.Checker, dg DiffGetterHTTP) http.Handler {
 			}
 			results = append(results, diffRes)
 		}
-		// TODO: Notify recipients if fails checks
-		// stringify results vs pass to logger
-		if results.Matches() > 0 {
-			fmt.Fprintf(w, "%s\n", msgFail)
+
+		if results.Matches() < 1 {
+			fmt.Fprintf(w, "%s\n", msgSuccess)
 			return
 		}
-		fmt.Fprintf(w, "%s\n", msgSuccess)
+
+		for _, res := range results {
+			if res.Matches() > 0 {
+				log.Log(
+					res.MatchedRules,
+					gitRes.Repository.Owner.Name,
+					gitRes.Repository.Name,
+					gitRes.Compare,
+				)
+			}
+		}
+		fmt.Fprintf(w, "%s\n", msgFail)
 	})
 }
 

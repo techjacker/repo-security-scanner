@@ -7,6 +7,7 @@ import (
 	"path"
 	"runtime"
 
+	"github.com/Sirupsen/logrus"
 	"github.com/julienschmidt/httprouter"
 	"github.com/techjacker/diffence"
 )
@@ -28,12 +29,27 @@ func getRules(rulesPath string) *[]diffence.Rule {
 	return rules
 }
 
-func getEnvVar(name string) []byte {
-	secretStr := os.Getenv(name)
-	if len(secretStr) < 1 {
+func getRequiredEnvVar(name string) []byte {
+	val, ok := os.LookupEnv(name)
+	if !ok {
 		panic(fmt.Sprintf("Env var:%s not set in environment", name))
 	}
-	return []byte(secretStr)
+	return []byte(val)
+}
+
+func getLogger() Log {
+	esURL, ok := os.LookupEnv("ELASTICSEARCH_URL")
+	if ok {
+		fmt.Printf("Logging to elasticsearch: %s\n", esURL)
+		logger, err := NewESLogger(esURL, "githubintegration")
+		if err != nil {
+			panic(err)
+		}
+		return logger
+	}
+	return Logger{
+		log: logrus.New(),
+	}
 }
 
 func main() {
@@ -43,10 +59,11 @@ func main() {
 		GithubHandler(
 			diffence.DiffChecker{Rules: getRules(gitrobRules)},
 			diffGetterGithub{},
+			getLogger(),
 		),
-		AuthMiddleware(GithubAuthenticator{getEnvVar(githubWebhookSecret)}),
+		AuthMiddleware(GithubAuthenticator{getRequiredEnvVar(githubWebhookSecret)}),
 	))
 
-	fmt.Printf("Server listening on port: %d", serverPort)
+	fmt.Printf("Server listening on port: %d\n", serverPort)
 	http.ListenAndServe(fmt.Sprintf(":%d", serverPort), router)
 }

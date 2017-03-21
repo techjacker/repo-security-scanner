@@ -10,6 +10,7 @@ OFFENSES_X1 = f591c33a1b9500d0721b6664cfb6033d47a00793
 FIXT_DIR = test/fixtures
 RULES_FILE = $(FIXT_DIR)/rules/gitrob.json
 DIFF_FILE = $(FIXT_DIR)/github_event_push.json
+DIFF_FILE_OFFENSES = $(FIXT_DIR)/github_event_push_offenses.json
 RULES_URL = https://raw.githubusercontent.com/michenriksen/gitrob/master/signatures.json
 
 cli:
@@ -56,12 +57,24 @@ run:
 mac-diff-file:
 	@cat $(DIFF_FILE) | openssl sha1 -hmac $(GITHUB_SECRET) | sed 's/^.* //'
 
+mac-diff-file-offenses:
+	@cat $(DIFF_FILE_OFFENSES) | openssl sha1 -hmac $(GITHUB_SECRET) | sed 's/^.* //'
+
+
 test-run:
 	@wget -O- \
 		-X POST \
 		--header="X-GitHub-Event: push" \
 		--header="X-Hub-Signature: sha1=$(shell make mac-diff-file)" \
 		--post-file "$(DIFF_FILE)" \
+		http://localhost:$(PORT)/github
+
+test-run-offenses:
+	@wget -O- \
+		-X POST \
+		--header="X-GitHub-Event: push" \
+		--header="X-Hub-Signature: sha1=$(shell make mac-diff-file-offenses)" \
+		--post-file "$(DIFF_FILE_OFFENSES)" \
 		http://localhost:$(PORT)/github
 
 test-run-fail:

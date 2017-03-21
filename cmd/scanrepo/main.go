@@ -47,20 +47,20 @@ func main() {
 	}
 
 	matches := res.Matches()
-	if matches > 0 {
-		i := 1
-		fmt.Printf("Diff contains %d offenses\n\n", matches)
-		for filename, rule := range res.MatchedRules {
-			fmt.Printf("------------------\n")
-			fmt.Printf("Violation %d\n", i)
-			fmt.Printf("File: %s\n", filename)
-			fmt.Printf("Reason: %#v\n\n", rule[0].Caption)
-			i++
-		}
-		// finding violations constitutes an error
-		os.Exit(1)
+	if matches < 1 {
+		fmt.Printf("Diff contains NO offenses\n\n")
 		return
 	}
-	fmt.Printf("Diff contains NO offenses\n\n")
-	os.Exit(0)
+
+	i := 1
+	fmt.Fprintf(os.Stderr, "Diff contains %d offenses\n\n", matches)
+	for filename, rule := range res.MatchedRules {
+		fmt.Fprintf(os.Stderr, "------------------\n")
+		fmt.Fprintf(os.Stderr, "Violation %d\n", i)
+		fmt.Fprintf(os.Stderr, "File: %s\n", filename)
+		fmt.Fprintf(os.Stderr, "Reason: %#v\n\n", rule[0].Caption)
+		i++
+	}
+	// finding violations constitutes an error
+	os.Exit(1)
 }

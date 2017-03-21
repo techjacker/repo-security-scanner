@@ -7,6 +7,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/Sirupsen/logrus"
 	"github.com/julienschmidt/httprouter"
 	"github.com/techjacker/diffence"
 )
@@ -19,6 +20,14 @@ func (t testDiffGetter) Get(_ string) (*http.Response, error) {
 	return &http.Response{
 		Body: ioutil.NopCloser(getFixture(t.fixt)),
 	}, nil
+}
+
+type testLogger struct {
+	log *logrus.Logger
+}
+
+func (l testLogger) Log(v ...interface{}) {
+	return
 }
 
 func TestGithubHandler(t *testing.T) {
@@ -75,6 +84,7 @@ func TestGithubHandler(t *testing.T) {
 			router.Handler("POST", testPath, GithubHandler(
 				diffence.DiffChecker{Rules: getTestRules(t, tt.args.rulesPath)},
 				testDiffGetter{tt.args.diffPath},
+				testLogger{},
 			))
 
 			params := getFixture(tt.args.githubPayloadPath)
