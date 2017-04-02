@@ -1,3 +1,5 @@
+.env*
+
 scanrepo
 release
 /repo-security-scanner
