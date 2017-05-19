@@ -54,9 +54,13 @@ func main() {
 
 	i := 1
 	fmt.Fprintf(os.Stderr, "Diff contains %d offenses\n\n", matches)
-	for filename, rule := range res.MatchedRules {
+	for diffKey, rule := range res.MatchedRules {
 		fmt.Fprintf(os.Stderr, "------------------\n")
 		fmt.Fprintf(os.Stderr, "Violation %d\n", i)
+		commit, filename := diffence.SplitDiffHashKey(diffKey)
+		if commit != "" {
+			fmt.Fprintf(os.Stderr, "Commit: %s\n", commit)
+		}
 		fmt.Fprintf(os.Stderr, "File: %s\n", filename)
 		fmt.Fprintf(os.Stderr, "Reason: %#v\n\n", rule[0].Caption)
 		i++
