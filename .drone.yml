@@ -2,7 +2,7 @@ pipeline:
 
   my-build:
     privileged: true
-    image: docker:1.11
+    image: docker:1.13
     environment:
       - DOCKER_HOST=tcp://127.0.0.1:2375
     commands:
@@ -11,7 +11,7 @@ pipeline:
       event: push
 
   image_to_quay:
-    image: docker:1.11
+    image: docker:1.13
     environment:
       - DOCKER_HOST=tcp://127.0.0.1:2375
     commands:
@@ -25,17 +25,17 @@ pipeline:
     image: quay.io/ukhomeofficedigital/kd:latest
     environment:
       - KUBE_SERVER=https://kube-dev.dsp.notprod.homeoffice.gov.uk
-      - KUBE_NAMESPACE=dev-induction
+      - KUBE_NAMESPACE=repo-security-scanner
       - INSECURE_SKIP_TLS_VERIFY=true
     commands:
       - cd kube
-      - kd -f deployment.yml -f ingress.yml -f service.yml
+      - kd -f deployment.yml -f service.yml -f ingress.yml
     when:
       event: [deployment, push]
 
 services:
   dind:
-    image: docker:1.11-dind
+    image: docker:1.13-dind
     privileged: true
     command:
       - "-s"
