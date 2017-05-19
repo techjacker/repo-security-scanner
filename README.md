@@ -17,6 +17,20 @@ Check the entire history of the current branch for secrets.
 
 ```
 $ git log -p | scanrepo
+
+------------------
+Violation 1
+Commit: 4cc087a1b4731d1017844cc86323df43068b0409
+File: web/src/db/seed.sql
+Reason: "SQL dump file"
+
+------------------
+Violation 2
+Commit: 142e6019248c0d53a5240242ed1a75c0cc110a0b
+File: config/passwords.ini
+Reason: "Contains word: password"
+
+...
 ```
 
 -----------------------------------------------------------
