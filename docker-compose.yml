@@ -28,3 +28,13 @@ services:
       interval: 5s
       timeout: 3s
       retries: 5
+
+  elastalert:
+    build:
+      context: elastalert
+    environment:
+      - ELASTICSEARCH_HOST=http://elasticsearch
+      - ELASTICSEARCH_PORT=9200
+    depends_on:
+      elasticsearch:
+        condition: service_healthy

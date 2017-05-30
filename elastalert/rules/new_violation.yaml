@@ -1,0 +1,52 @@
+# Alert when a login event is detected for user "admin" never before seen IP
+# In this example, "login" logs contain which user has logged in from what IP
+
+# (Optional)
+# Elasticsearch host
+# es_host: elasticsearch.example.com
+
+# (Optional)
+# Elasticsearch port
+# es_port: 14900
+
+# (OptionaL) Connect with SSL to Elasticsearch
+#use_ssl: True
+
+# (Optional) basic-auth username and password for Elasticsearch
+#es_username: someusername
+#es_password: somepassword
+
+# (Required)
+# Rule name, must be unique
+name: New violation added to githubintegration index rule
+
+# (Required)
+# Type of alert.
+# the frequency rule type alerts when num_events events occur with timeframe time
+type: new_term
+
+# (Required)
+# Index to search, wildcard supported
+index: githubintegration
+
+# (Required, new_term specific)
+# Monitor the field "repo"
+# logrus.DebugLevel
+fields:
+ - "repo"
+
+# (Optional, new_term specific)
+# This means that we will query 7 days worth of data when ElastAlert starts to find which values of ip_address already exist
+# If they existed in the last 7 days, no alerts will be triggered for them when they appear
+terms_window_size:
+  days: 7
+
+# (Required)
+# The alert is use when a match is found
+alert:
+- "email"
+
+# (required, email specific)
+# a list of email addresses to send alerts to
+email:
+- "elastalert@example.com"

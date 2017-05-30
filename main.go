@@ -13,6 +13,7 @@ import (
 )
 
 const (
+	elasticSearchIndex  = "githubintegration"
 	headerGithubMAC     = "X-Hub-Signature"
 	headerGithubEvt     = "X-Github-Event"
 	githubWebhookSecret = "GITHUB_WEBHOOKSECRET"
@@ -41,7 +42,7 @@ func getLogger() Log {
 	esURL, ok := os.LookupEnv("ELASTICSEARCH_URL")
 	if ok {
 		fmt.Printf("Logging to elasticsearch: %s\n", esURL)
-		logger, err := NewESLogger(esURL, "githubintegration")
+		logger, err := NewESLogger(esURL, elasticSearchIndex)
 		if err != nil {
 			panic(err)
 		}
