@@ -1,9 +1,8 @@
 FROM iron/python:2
 
-# Alias, DNS or IP of Elasticsearch host to be queried by Elastalert. Set in default Elasticsearch configuration file.
-ENV ELASTICSEARCH_HOST elasticsearchhost
-# Port on above Elasticsearch host. Set in default Elasticsearch configuration file.
-ENV ELASTICSEARCH_PORT 9200
+
+# ENV ELASTICSEARCH_HOST elasticsearchhost
+# ENV ELASTICSEARCH_PORT 9200
 
 
 # Set this environment variable to true to set timezone on container start.
@@ -19,8 +18,8 @@ ENV ELASTALERT_DIRECTORY_NAME elastalert
 # Elastalert home directory full path.
 ENV ELASTALERT_HOME /opt/${ELASTALERT_DIRECTORY_NAME}
 
-
 # Install software required for Elastalert and NTP for time synchronization.
+WORKDIR /opt
 RUN apk update && \
     apk upgrade && \
     apk add ca-certificates openssl-dev libffi-dev python-dev gcc musl-dev tzdata openntpd && \
@@ -35,61 +34,30 @@ RUN apk update && \
     rm *.zip && \
     mv e* ${ELASTALERT_DIRECTORY_NAME}
 
-WORKDIR ${ELASTALERT_HOME}
-
 # Install Elastalert.
+WORKDIR ${ELASTALERT_HOME}
 RUN python setup.py install && \
     pip install -e . && \
     pip uninstall twilio --yes && \
     pip install twilio==6.0.0
 
-
-# Directory holding configuration for Elastalert and Supervisor.
-ENV ${CONFIG_DIR} /opt/config
-# Elastalert rules directory.
-ENV ${RULES_DIRECTORY} /opt/rules
-# Elastalert configuration file path in configuration directory.
-ENV ${ELASTALERT_CONFIG} ${CONFIG_DIR}/elastalert_config.yaml
-
-
+ENV RULES_DIRECTORY /opt/rules
 COPY rules ${RULES_DIRECTORY}
+ENV ELASTALERT_CONFIG /opt/elastalert_config.yaml
 COPY elastalert_config.yaml ${ELASTALERT_CONFIG}
 
-# Make the start-script executable.
-RUN chmod +x /opt/start-elastalert.sh && \
+RUN mkdir -p ${LOG_DIR} && \
+    mkdir -p /var/empty
 
-# Create directories. The /var/empty directory is used by openntpd.
-    mkdir -p ${CONFIG_DIR} && \
-    mkdir -p ${RULES_DIRECTORY} && \
-    mkdir -p ${LOG_DIR} && \
-    mkdir -p /var/empty && \
 
-# Copy default configuration files to configuration directory.
-    cp ${ELASTALERT_HOME}/config.yaml.example ${ELASTALERT_CONFIG} && \
-    cp ${ELASTALERT_HOME}/supervisord.conf.example ${ELASTALERT_SUPERVISOR_CONF} && \
 
-# Elastalert configuration:
-    # Set the rule directory in the Elastalert config file to external rules directory.
-    sed -i -e"s|rules_folder: [[:print:]]*|rules_folder: ${RULES_DIRECTORY}|g" ${ELASTALERT_CONFIG} && \
-    # Set the Elasticsearch host that Elastalert is to query.
-    sed -i -e"s|es_host: [[:print:]]*|es_host: ${ELASTICSEARCH_HOST}|g" ${ELASTALERT_CONFIG} && \
-    # Set the port used by Elasticsearch at the above address.
-    sed -i -e"s|es_port: [0-9]*|es_port: ${ELASTICSEARCH_PORT}|g" ${ELASTALERT_CONFIG} && \
 
-# Copy the Elastalert configuration file to Elastalert home directory to be used when creating index first time an Elastalert container is launched.
-    cp ${ELASTALERT_CONFIG} ${ELASTALERT_HOME}/config.yaml && \
+    # apk del python-dev && \
+    # apk del musl-dev && \
+    # apk del gcc && \
+    # apk del openssl-dev && \
+    # apk del libffi-dev && \
 
-# Clean up.
-    apk del python-dev && \
-    apk del musl-dev && \
-    apk del gcc && \
-    apk del openssl-dev && \
-    apk del libffi-dev && \
-
-WORKDIR /opt
-
-# Copy the script used to launch the Elastalert when a container is started.
-COPY ./start-elastalert.sh /opt/
-
-# Launch Elastalert when a container is started.
+COPY start-elastalert.sh /opt/
+RUN chmod +x /opt/start-elastalert.sh
 CMD ["/opt/start-elastalert.sh"]
