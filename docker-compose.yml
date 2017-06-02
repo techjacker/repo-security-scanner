@@ -35,6 +35,8 @@ services:
     environment:
       - ELASTICSEARCH_HOST=http://elasticsearch
       - ELASTICSEARCH_PORT=9200
+      # - RULES_DIRECTORY=/opt/rules
+      # - ELASTALERT_CONFIG=/opt/elastalert_config.yaml
     depends_on:
       elasticsearch:
         condition: service_healthy
