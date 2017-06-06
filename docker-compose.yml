@@ -18,7 +18,7 @@ services:
 
   elasticsearch:
     restart: always
-    image: elasticsearch:2
+    image: elasticsearch:5
     ports:
       - 9200:9200
     expose:
@@ -33,10 +33,8 @@ services:
     build:
       context: elastalert
     environment:
-      - ELASTICSEARCH_HOST=http://elasticsearch
+      - ELASTICSEARCH_HOST=elasticsearch
       - ELASTICSEARCH_PORT=9200
-      # - RULES_DIRECTORY=/opt/rules
-      # - ELASTALERT_CONFIG=/opt/elastalert_config.yaml
     depends_on:
       elasticsearch:
         condition: service_healthy

@@ -5,7 +5,8 @@ rules_folder: /opt/rules
 # How often ElastAlert will query Elasticsearch
 # The unit can be anything from weeks to seconds
 run_every:
-  minutes: 1
+  seconds: 10
+  # minutes: 1
 
 # ElastAlert will buffer results from the most recent
 # period of time, in case some log sources are not in real time
@@ -55,3 +56,5 @@ writeback_index: elastalert_status
 # sending the alert until this time period has elapsed
 alert_time_limit:
   days: 2
+
+timestamp_field: Timestamp

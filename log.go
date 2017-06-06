@@ -3,10 +3,10 @@ package main
 import (
 	"fmt"
 
-	"gopkg.in/olivere/elastic.v3"
-	"gopkg.in/sohlich/elogrus.v1"
-
 	"github.com/Sirupsen/logrus"
+	elastic "gopkg.in/olivere/elastic.v5"
+	elogrus "gopkg.in/sohlich/elogrus.v2"
+
 	"github.com/techjacker/diffence"
 )
 
