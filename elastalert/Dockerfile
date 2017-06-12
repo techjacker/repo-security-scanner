@@ -22,11 +22,6 @@ RUN python setup.py install && \
     pip install -e . && \
     pip uninstall twilio --yes && \
     pip install twilio==6.0.0
-    # apk del python-dev && \
-    # apk del musl-dev && \
-    # apk del gcc && \
-    # apk del openssl-dev && \
-    # apk del libffi-dev && \
 
 ENV RULES_DIRECTORY /opt/rules
 COPY rules ${RULES_DIRECTORY}

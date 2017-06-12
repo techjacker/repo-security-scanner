@@ -43,3 +43,30 @@ these/pems/are/ok/*.pem
 ```
 
 [See example in this repo](./.secignore).
+
+
+-----------------------------------------------------------
+### Notifications
+Work in progress.
+
+#### Local testing of notifications
+```
+# docker-compose.yml -> comment out elastalert container
+. .env && docker-compose up --build
+
+# new CLI tab
+# Elastalert expects the elasticsearch index it is monitoring to exist otherwise it will error. The server creates the index in elasticsearch the first time it writes a log.
+. .env && make test-run-offenses
+
+# docker-compose.yml -> uncomment out elastalert container
+. .env && docker-compose up
+
+# new CLI tab
+. .env && make test-run-offenses
+
+# attach to elastalert container
+doc run --entrypoint sh elastalert
+OR
+docker exec -it <___> sh
+elastalert-test-rule --config $ELASTALERT_CONFIG --count-only "$RULES_DIRECTORY/new_violation.yaml"
+```

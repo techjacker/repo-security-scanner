@@ -35,6 +35,7 @@ services:
     environment:
       - ELASTICSEARCH_HOST=elasticsearch
       - ELASTICSEARCH_PORT=9200
+      - NOTIFICATION_EMAILS=test@example.com,test2@example.com
     depends_on:
       elasticsearch:
         condition: service_healthy
