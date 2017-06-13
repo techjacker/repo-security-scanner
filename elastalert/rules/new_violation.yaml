@@ -1,17 +1,9 @@
-# Alert when a login event is detected for user "admin" never before seen IP
-# In this example, "login" logs contain which user has logged in from what IP
+# Alert when a new violation is written to the githubintegration elasticsearch index
 
-# (Required)
-# Rule name, must be unique
 name: New violation added to githubintegration index rule
 
-# (Required)
-# Type of alert.
-# the frequency rule type alerts when num_events events occur with timeframe time
 type: new_term
 
-# (Required)
-# Index to search, wildcard supported
 index: githubintegration
 
 fields:
@@ -21,7 +13,5 @@ filter:
 - term:
     _type: "log"
 
-# (Required)
-# The alert is use when a match is found
 alert:
 - "email"

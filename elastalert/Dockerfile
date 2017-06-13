@@ -1,6 +1,5 @@
 FROM iron/python:2
 
-# Install software required for Elastalert and NTP for time synchronization.
 WORKDIR /opt
 RUN apk update && \
     apk upgrade && \
