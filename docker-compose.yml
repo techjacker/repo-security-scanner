@@ -18,7 +18,7 @@ services:
 
   elasticsearch:
     restart: always
-    image: elasticsearch:2
+    image: elasticsearch:5
     ports:
       - 9200:9200
     expose:
@@ -28,3 +28,14 @@ services:
       interval: 5s
       timeout: 3s
       retries: 5
+
+  elastalert:
+    build:
+      context: elastalert
+    environment:
+      - ELASTICSEARCH_HOST=elasticsearch
+      - ELASTICSEARCH_PORT=9200
+      - NOTIFICATION_EMAILS=test@example.com,test2@example.com
+    depends_on:
+      elasticsearch:
+        condition: service_healthy

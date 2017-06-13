@@ -1,0 +1,17 @@
+# Alert when a new violation is written to the githubintegration elasticsearch index
+
+name: New violation added to githubintegration index rule
+
+type: new_term
+
+index: githubintegration
+
+fields:
+  - Level
+
+filter:
+- term:
+    _type: "log"
+
+alert:
+- "email"
