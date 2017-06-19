@@ -46,21 +46,44 @@ these/pems/are/ok/*.pem
 
 
 -----------------------------------------------------------
-### Notifications
+## Notifications
 Work in progress.
 
-#### Local testing of notifications
+
+### Local Testing
+
+#### Set environment variables needed
+Create `env` file and update environment variables.
 ```
-# launch server and elasticsearch
-. .env && docker-compose up -d server elasticsearch
+cp .env{.example,}
+vi .env
+```
+
+#### Launch containers
+```
+# launch server first
+. .env && docker-compose up -d server
 
 # Elastalert expects the elasticsearch index it is monitoring to exist otherwise it will error. The server creates the index in elasticsearch the first time it writes a log.
 make test-run-offenses
 
 # launch elastalert
-docker-compose up -d elastalert
+docker-compose up elastalert
+```
+
+#### Debugging
+```
+docker exec -it <elastalert_container_hash> sh
 
 # run elastalert test rule utility within elastalert container
-docker exec -it <elastlaert_container_hash> sh
 elastalert-test-rule --config $ELASTALERT_CONFIG --count-only "$RULES_DIRECTORY/new_violation.yaml"
+elastalert-test-rule --alert --config $ELASTALERT_CONFIG "$RULES_DIRECTORY/new_violation.yaml"
+
+# run elastalert in debug mode
+elastalert --config "$ELASTALERT_CONFIG" --rule "$RULES_DIRECTORY/new_violation.yaml" --debug
+```
+
+#### Logs
+```
+tail -f /log/elastalert_new_violation_rule.log
 ```
