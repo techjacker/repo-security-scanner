@@ -1,5 +1,4 @@
 # Alert when a new violation is written to the githubintegration elasticsearch index
-
 name: New violation added to githubintegration index rule
 
 type: new_term
@@ -8,10 +7,11 @@ index: githubintegration
 
 fields:
   - Level
+  - Timestamp
 
-filter:
-- term:
-    _type: "log"
+aggregation_key: "Data.repo"
+
+log_file_path: "/var/log/elastalert_new_violation_rule.log"
 
 alert:
-- "email"
+- "elastalert_modules.govuknotify.GovNotifyAlerter"

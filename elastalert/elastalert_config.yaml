@@ -1,7 +1,3 @@
-# This is the folder that contains the rule yaml files
-# Any .yaml file will be loaded as a rule
-rules_folder: /opt/rules
-
 # How often ElastAlert will query Elasticsearch
 # The unit can be anything from weeks to seconds
 run_every:
@@ -11,13 +7,6 @@ run_every:
 # period of time, in case some log sources are not in real time
 buffer_time:
   minutes: 15
-
-# The Elasticsearch hostname for metadata writeback
-# Note that every rule can have its own Elasticsearch host
-es_host:
-
-# The Elasticsearch port
-es_port:
 
 # The index on es_host which is used for metadata storage
 # This can be a unmapped index, but it is recommended that you run
