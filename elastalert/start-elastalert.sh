@@ -2,6 +2,17 @@
 set -e
 
 ####################
+# create elasticsearch mappings for index monitoring
+# elastlaert will throw an error if these do not already exist
+####################
+curl -s "$ELASTICSEARCH_HOST:$ELASTICSEARCH_PORT/githubintegration/_search"
+if [[ $? != 0 ]]; then
+    curl \
+        --upload-file /tmp/elasticsearch_mappings.json \
+        "$ELASTICSEARCH_HOST:$ELASTICSEARCH_PORT/githubintegration" | python -m json.tool
+fi
+
+####################
 # Set the timezone
 ####################
 if [ "$SET_CONTAINER_TIMEZONE" = "true" ]; then

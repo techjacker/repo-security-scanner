@@ -10,7 +10,7 @@ ENV CONTAINER_TIMEZONE Europe/London
 WORKDIR /opt
 RUN apk update && \
     apk upgrade && \
-    apk add ca-certificates openssl-dev libffi-dev python-dev gcc musl-dev tzdata openntpd && \
+    apk add ca-certificates openssl-dev libffi-dev python-dev gcc musl-dev tzdata openntpd curl && \
     rm -rf /var/cache/apk/* && \
 # Install pip - required for installation of Elastalert.
     wget https://bootstrap.pypa.io/get-pip.py && \
@@ -38,9 +38,7 @@ ENV ELASTALERT_CONFIG /opt/elastalert_config.yaml
 COPY elastalert_config.yaml ${ELASTALERT_CONFIG}
 COPY modules ${ELASTALERT_ROOT}/elastalert_modules
 
-
-
-
+COPY elasticsearch_mappings.json /tmp
 COPY start-elastalert.sh /opt/
 RUN chmod +x /opt/start-elastalert.sh
 CMD ["/opt/start-elastalert.sh"]

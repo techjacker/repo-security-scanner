@@ -12,3 +12,12 @@
     sha: cab517ac1132ea76603bd51ba5a95305f81bb2ba
     hooks:
     -   id: gofmt
+
+-   repo: local
+    hooks:
+    -   id: kubeval
+        name: kubeval
+        description: Lint kube files with system.
+        entry: kubeval
+        language: system
+        files: kube\/(?!secrets\.yml)

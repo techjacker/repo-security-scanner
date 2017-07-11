@@ -8,11 +8,11 @@ import (
 )
 
 const (
-	msgHealthOk   = "ok"
-	msgBadRequest = "bad request"
-	msgIgnore     = "Not a push evt; ignoring"
-	msgSuccess    = "Push contains no offenses"
-	msgFail       = "TODO: email list of recipients to be notified of violations"
+	msgHealthOk          = "ok"
+	msgBadRequest        = "bad request"
+	msgIgnore            = "Not a push evt; ignoring"
+	msgNoViolationsFound = "Push contains no offenses"
+	msgViolationFound    = "Push contains violations"
 )
 
 // GithubHandler is a github integration HTTP handler
@@ -43,7 +43,7 @@ func GithubHandler(dc diffence.Checker, dg DiffGetterHTTP, log Log) http.Handler
 		}
 
 		if results.Matches() < 1 {
-			fmt.Fprintf(w, "%s\n", msgSuccess)
+			fmt.Fprintf(w, "%s\n", msgNoViolationsFound)
 			return
 		}
 
@@ -57,7 +57,7 @@ func GithubHandler(dc diffence.Checker, dg DiffGetterHTTP, log Log) http.Handler
 				)
 			}
 		}
-		fmt.Fprintf(w, "%s\n", msgFail)
+		fmt.Fprintf(w, "%s\n", msgViolationFound)
 	})
 }
 
