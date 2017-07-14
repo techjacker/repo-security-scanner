@@ -11,8 +11,8 @@ spec:
         name: repo-security-scanner
     spec:
       containers:
-      - name: repo-security-scanner
-        image: quay.io/ukhomeofficedigital/repo-security-scanner:{{.DRONE_COMMIT_SHA}}
+      - name: repo-security-scanner-webserver
+        image: quay.io/ukhomeofficedigital/repo-security-scanner-webserver:{{.DRONE_COMMIT_SHA}}
         ports:
           - name: http
             containerPort: 8080
@@ -36,6 +36,40 @@ spec:
               secretKeyRef:
                 name: repo-security-scanner
                 key: GITHUB_WEBHOOKSECRET
+
+      - name: repo-security-scanner-elasticsearch
+        image: elasticsearch:5
+        ports:
+          - name: elasticsearch
+            containerPort: 9200
+            livenessProbe:
+              httpGet:
+                path: /healthz
+                port: http
+            readinessProbe:
+              httpGet:
+                path: /healthz
+                port: http
+
+      - name: repo-security-scanner-elastalert
+        image: quay.io/ukhomeofficedigital/repo-security-scanner-elastalert:{{.DRONE_COMMIT_SHA}}
+        env:
+          - name: ELASTICSEARCH_URL
+          - name: NOTIFICATION_EMAILS
+            valueFrom:
+              secretKeyRef:
+                name: repo-security-scanner
+                key: NOTIFICATION_EMAILS
+          - name: GOVUK_NOTIFY_TEMPLATE_ID
+            valueFrom:
+              secretKeyRef:
+                name: repo-security-scanner
+                key: GOVUK_NOTIFY_TEMPLATE_ID
+          - name: GOVUK_NOTIFY_API_KEY
+            valueFrom:
+              secretKeyRef:
+                name: repo-security-scanner
+                key: GOVUK_NOTIFY_API_KEY
         resources:
           limits:
             cpu: 250m

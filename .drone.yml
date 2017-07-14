@@ -1,12 +1,22 @@
 pipeline:
 
-  my-build:
+  webserver:
     privileged: true
     image: docker:1.13
     environment:
       - DOCKER_HOST=tcp://127.0.0.1:2375
     commands:
-      - docker build -t repo-security-scanner .
+      - docker build -t repo-security-scanner-webserver .
+    when:
+      event: push
+
+  elastalert:
+    privileged: true
+    image: docker:1.13
+    environment:
+      - DOCKER_HOST=tcp://127.0.0.1:2375
+    commands:
+      - docker build -t repo-security-scanner-elastalert ./elastalert
     when:
       event: push
 
@@ -16,8 +26,10 @@ pipeline:
       - DOCKER_HOST=tcp://127.0.0.1:2375
     commands:
       - docker login -u="ukhomeofficedigital+repo_security_scanner_bot" -p=${DOCKER_PASSWORD} quay.io
-      - docker tag repo-security-scanner quay.io/ukhomeofficedigital/repo-security-scanner:${DRONE_COMMIT_SHA}
-      - docker push quay.io/ukhomeofficedigital/repo-security-scanner:${DRONE_COMMIT_SHA}
+      - docker tag repo-security-scanner-webserver quay.io/ukhomeofficedigital/repo-security-scanner-webserver:${DRONE_COMMIT_SHA}
+      - docker push quay.io/ukhomeofficedigital/repo-security-scanner-webserver:${DRONE_COMMIT_SHA}
+      - docker tag repo-security-scanner-elastalert quay.io/ukhomeofficedigital/repo-security-scanner-elastalert:${DRONE_COMMIT_SHA}
+      - docker push quay.io/ukhomeofficedigital/repo-security-scanner-elastalert:${DRONE_COMMIT_SHA}
     when:
       event: push
 
