@@ -64,7 +64,7 @@ func TestGithubHandler(t *testing.T) {
 				diffPath:          "test/fixtures/no_offenses.diff",
 			},
 			wantStatusCode: http.StatusOK,
-			wantResBody:    msgSuccess,
+			wantResBody:    msgNoViolationsFound,
 		},
 		{
 			name: "1 offense in diff",
@@ -74,7 +74,7 @@ func TestGithubHandler(t *testing.T) {
 				diffPath:          "test/fixtures/offenses_x1.diff",
 			},
 			wantStatusCode: http.StatusOK,
-			wantResBody:    msgFail,
+			wantResBody:    msgViolationFound,
 		},
 	}
 	for _, tt := range tests {

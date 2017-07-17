@@ -1,0 +1,104 @@
+{
+    "mappings": {
+        "log": {
+            "properties": {
+                "Data": {
+                    "properties": {
+                        "filename": {
+                            "type": "text",
+                            "fields": {
+                                "keyword": {
+                                    "type": "keyword",
+                                    "index": false,
+                                    "ignore_above": 256
+                                }
+                            },
+                            "fielddata": false
+                        },
+                        "organisation": {
+                            "type": "text",
+                            "fields": {
+                                "keyword": {
+                                    "type": "keyword",
+                                    "index": false,
+                                    "ignore_above": 256
+                                }
+                            },
+                            "fielddata": false
+                        },
+                        "reason": {
+                            "type": "text",
+                            "fields": {
+                                "keyword": {
+                                    "type": "keyword",
+                                    "index": false,
+                                    "ignore_above": 256
+                                }
+                            },
+                            "fielddata": false
+                        },
+                        "repo": {
+                            "type": "text",
+                            "fields": {
+                                "keyword": {
+                                    "type": "keyword",
+                                    "index": false,
+                                    "ignore_above": 256
+                                }
+                            },
+                            "fielddata": false
+                        },
+                        "url": {
+                            "type": "text",
+                            "fields": {
+                                "keyword": {
+                                    "type": "keyword",
+                                    "index": false,
+                                    "ignore_above": 256
+                                }
+                            },
+                            "fielddata": false
+                        }
+                    }
+                },
+                "Host": {
+                    "type": "text",
+                    "fields": {
+                        "keyword": {
+                            "type": "keyword",
+                            "index": false,
+                            "ignore_above": 256
+                        }
+                    },
+                    "fielddata": false
+                },
+                "Level": {
+                    "type": "text",
+                    "fields": {
+                        "keyword": {
+                            "type": "keyword",
+                            "index": false,
+                            "ignore_above": 256
+                        }
+                    },
+                    "fielddata": false
+                },
+                "Message": {
+                    "type": "text",
+                    "fields": {
+                        "keyword": {
+                            "type": "keyword",
+                            "index": false,
+                            "ignore_above": 256
+                        }
+                    },
+                    "fielddata": false
+                },
+                "Timestamp": {
+                    "type": "date",
+                    "format": "strict_date_optional_time||epoch_millis"
+                }
+            }
+        }
+    }
+}
