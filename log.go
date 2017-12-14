@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/Sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 	elastic "gopkg.in/olivere/elastic.v5"
 	elogrus "gopkg.in/sohlich/elogrus.v2"
 
