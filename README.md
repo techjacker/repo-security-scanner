@@ -1,3 +1,5 @@
+[![goreleaser](https://github.com/techjacker/repo-security-scanner/actions/workflows/release.yaml/badge.svg)](https://github.com/techjacker/repo-security-scanner/actions/workflows/release.yaml)
+
 # repo-security-scanner
 
 - CLI tool that finds secrets accidentally committed to a git repo, eg passwords, private keys
