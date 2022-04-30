@@ -13,6 +13,12 @@ DIFF_FILE = $(FIXT_DIR)/github_event_push.json
 DIFF_FILE_OFFENSES = $(FIXT_DIR)/github_event_push_offenses.json
 RULES_URL = https://raw.githubusercontent.com/michenriksen/gitrob/master/signatures.json
 
+release-local:
+	@goreleaser release --snapshot --rm-dist
+
+release:
+	@goreleaser release
+
 cli:
 	@go install -race ./cmd/scanrepo
 
@@ -96,4 +102,4 @@ test-run-dev:
 test:
 	@go test
 
-.PHONY: test* run deps install lint rules struct diff
+.PHONY: release* test* run deps install lint rules struct diff
